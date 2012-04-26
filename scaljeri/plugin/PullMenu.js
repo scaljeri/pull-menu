@@ -17,24 +17,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         scrollable: null,
 
         /*
-         * @cfg {String} pullRefreshText The text that will be shown while you are pulling down.
-         * @accessor
-         */
-        pullRefreshText: 'Pull down to refresh...',
-
-        /*
-         * @cfg {String} releaseRefreshText The text that will be shown after you have pulled down enough to show the release message.
-         * @accessor
-         */
-        releaseRefreshText: 'Release to refresh...',
-
-        /*
-         * @cfg {String} loadingText The text that will be shown while the list is refreshing.
-         * @accessor
-         */
-        loadingText: 'Loading...',
-
-        /*
          * @cfg {Number} snappingAnimationDuration The duration for snapping back animation after the data has been refreshed
          * @accessor
          */
@@ -48,26 +30,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          */
         refreshFn: null,
 
-        /*
-         * @cfg {XTemplate/String/Array} pullTpl The template being used for the pull to refresh markup.
-         * @accessor
-         */
-        pullTpl: [
-            '<div class="x-list-pullrefresh">',
-                '<div class="x-list-pullrefresh-arrow"></div>',
-                '<div class="x-loading-spinner">',
-                    '<span class="x-loading-top"></span>',
-                    '<span class="x-loading-right"></span>',
-                    '<span class="x-loading-bottom"></span>',
-                    '<span class="x-loading-left"></span>',
-                '</div>',
-                '<div class="x-list-pullrefresh-wrap">',
-                    '<h3 class="x-list-pullrefresh-message">{message}</h3>',
-                    '<div class="x-list-pullrefresh-updated">Last Updated: <span>{lastUpdated:date("m/d/Y h:iA")}</span></div>',
-                '</div>',
-            '</div>'
-        ].join(''),
-        
         /*
          *
          */
