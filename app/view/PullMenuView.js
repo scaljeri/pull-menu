@@ -1,12 +1,12 @@
 Ext.define('GS.view.PullMenuView', {
 	extend: 'Ext.Panel', 
 	xtype: 'pullmenu',
-	requires: ['Ext.plugin.PullMenu', 'GS.view.MenuVertical', 'GS.view.MenuHorizontal'],
+	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuVertical', 'GS.view.MenuHorizontal'],
 	config: {
 		title: 'Pull to Refresh Demo',
     	plugins: [
         	{
-            	xclass: 'Ext.plugin.PullMenu',
+            	xclass: 'Scaljeri.plugin.PullMenu',
             	pullRefreshText: 'Pull down for more new Tweets!',
             	menuXclass: { top: 'GS.view.MenuHorizontal', left: 'GS.view.MenuVertical' }
         	}

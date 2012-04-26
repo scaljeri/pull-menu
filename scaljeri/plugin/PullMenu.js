@@ -5,7 +5,7 @@
  *
  */
 
-Ext.define('Ext.plugin.PullMenu', {
+Ext.define('Scaljeri.plugin.PullMenu', {
     extend: 'Ext.Component',
     alias: 'plugin.pullmenu',
     requires: ['Ext.DateExtras'],
