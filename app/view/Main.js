@@ -26,9 +26,14 @@ Ext.define("GS.view.Main", {
                 ].join("")
             },
             {
-                title: 'PullMenu',
+                title: 'PullMenuTop',
                 iconCls: 'action',
-                xtype: 'pullmenu'
+                xtype: 'pullmenutop'
+            },	
+            {
+                title: 'PullMenuLeft',
+                iconCls: 'action',
+                xtype: 'pullmenuleft'
             }
         ]
     }

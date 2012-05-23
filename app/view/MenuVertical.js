@@ -3,8 +3,7 @@ Ext.define('GS.view.MenuVertical', {
 	xtype: 'menuvertical',
 	config: {
 		layout: 'vbox',
-		width: 100,
-		height: '100%',
+		width: '100px',
 		items: [
 	        {
 	        	xtype: 'button',

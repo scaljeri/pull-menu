@@ -8,10 +8,11 @@ Ext.application({
     name: 'GS',
 
     requires: [
-        'Ext.MessageBox'
+        'Ext.MessageBox',
+        'Ext.Anim'
     ],
 
-    views: ['Main', 'PullMenuView', 'MenuVertical', 'MenuHorizontal'],
+    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag'],
 
     icon: {
         57: 'resources/icons/Icon.png',
@@ -22,6 +23,10 @@ Ext.application({
     
     phoneStartupScreen: 'resources/loading/Homescreen.jpg',
     tabletStartupScreen: 'resources/loading/Homescreen~ipad.jpg',
+    
+    viewport : {
+        autoMaximize : true
+    },
 
     launch: function() {
         // Destroy the #appLoadingIndicator element

@@ -4,8 +4,7 @@ Ext.define('GS.view.MenuHorizontal', {
 	config: {
 		//cls: 'x-pullmenu x-pullmenu-top',
 		layout: 'hbox',
-		height: 30,
-		width: '100%',
+		height: '30px',
 		items: [
 	        {
 	        	xtype: 'button',
