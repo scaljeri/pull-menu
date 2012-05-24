@@ -21,8 +21,8 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * @accessor
          */
         snappingAnimationDuration: 150, // TODO: remove?!
-        animationSpeed: 500, // pixels per second
-
+        animationSpeed: 1000, // pixels per second
+        
         /*
          * This function is called when the menu 'show' or 'hide' animation is completed.
          */
@@ -121,10 +121,12 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     		(function(key){ // closure stuff (use 'me' instead of this)
     			me.menus[key] = me[ me.isScrollable(key) ? 'createScrollableMenu':'createPullMenu'](key, me.getItems()[key]) ;
     			me.menus[key].on({
-    	  			painted: function(){ // when painted store the menu dimensions
-    				console.log("PAINTED") ;
-    	   						me.mdim[key] = this.element['get' + (key == 'top' || key == 'bottom' ? 'Height':'Width')]() ;
-    	   						//menu.setStyle(key + ': -' + this.mdim[key] + 'px') ; //  the minus hides the menu off screen
+    	  			painted: function(){ // when painted the sizes of the menu is known
+    	  						var xy = key == 'top' || key == 'bottom' ? 'getHeight' : 'getWidth' ;
+    	  						console.log("SIZES FOR " + key  + " --> " + xy) ;
+    	  						//console.log('size is ' + this.getItems().items[0].element[xy]()  + " and " + this.getItems().items[2].element[xy]() + " ======= " + this.element[xy]()) ;
+    	   						//me.mdim[key] = this.getItems().items[0].element[xy]() +  this.getItems().items[2].element[xy]() ;
+    	   						me.mdim[key] = this.element[xy]() ;
     	   					},
     	   					single: true,
     	   					scope: me.menus[key]
@@ -135,6 +137,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     	// not sure if this is necessary?
     },
     
+    // helpers
     isScrollable: function(position) {
     	console.log("position=" + position);
     	return this.getScrollable() ? this.getScrollable().isAxisEnabled( position == 'top' || position == 'bottom' ? 'y' : 'x' ) : false ;
@@ -154,148 +157,135 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     /* ******************* */
     
     createPullMenu: function(key, options){
-    	var me = this ;
+    	// configure container element
     	var containerConfig = {
+    		xtype: 'panel',
     		layout: key == 'top' || key == 'bottom' ? 'vbox' : 'hbox',
-       		//hidden: true,
        		cls: 'pullmenu',
+       		style: 'overflow:hidden',
        		padding: 0
     	} ;
     	containerConfig[key == 'top' || key == 'bottom' ? 'width' : 'height'] = '100%' ;
-    	containerConfig[key] = '-1000px' ;
+    	containerConfig[key] = '-1000px' ; // hide panel off screen
     	
-    	var menuConfig = { 
-    			xclass: options.xclass
-    	} ;
-    	
+    	// configure the dragbar 
     	var dragBarConfig = { 
        			xtype: 'panel',
-       			style: 'background-color:black;z-index:10;border-radius: 0 0 0 0',
-   				html: ['<div style="background-color:black;padding:1px;">',
-       				   		key == 'top' || key == 'bottom' ?
-       				       		'<div style="margin-left:auto;margin-right:auto;margin-top:4px;border-top:2px solid grey;border-bottom: 2px solid grey;width:50px;height:10px;"></div>'
-       				       			:
-       				       		'<div style="margin-top:auto;margin-bottom:auto;margin-left:4px;border-left:2px solid grey;border-right: 2px solid grey;height:50px;width:10px;"></div>',
-       				   '</div>'].join('')
+       			layout: 'vbox',
+       			style: 'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
+   				//html: this.getHtmlDragBar(key),
+       			items: [{
+       				xtype: 'panel',
+       				centered:true,
+       				html: key == 'top' || key == 'bottom' ? 
+       						'<div style="height:10px;width:40px;background:black;margin-top:-1px;border-top:2px solid grey;border-bottom:2px solid grey;"></div>'
+       						:
+       						'<div style="height:40px;width:10px;background:black;margin-left:-1px;border-left:2px solid grey;border-right:2px solid grey;"></div>',
+       				cls: 'drag-bar-stripes'
+       			}
+       			],
+   				docked: this.getOppositeKey(key)
        		};
     	dragBarConfig[this.getAnimationProperty(key)] = this.getDragBarWidth() ;
     	
-    	var fillPanel = {
-    			xtype: 'panel',
-    			height: key == 'top' || key == 'bottom' ? '0px'  : '100%',
-    	       	width:  key == 'top' || key == 'bottom' ? '100%' : '0px',
-    	}
-    	
     	if ( key == 'top' || key == 'left') 
-    		containerConfig.items = [ menuConfig, fillPanel, dragBarConfig ] ;
+    		containerConfig.items = [ { xclass: options.xclass }, /*{ xtype: 'spacer' },*/ dragBarConfig ] ;
     	else 
-    		containerConfig.items = [ dragBarConfig, fillPanel, menuConfig  ] ;
+    		containerConfig.items = [ dragBarConfig, /*{ xtype: 'spacer' },*/ { xclass: options.xclass }  ] ;
     		
        	var cont = Ext.create( 'Ext.Panel', containerConfig ) ;
     	this.parent.insert(0, cont) ;
-    	
     	this.attachPullMenuListeners(cont, key, options) ;
     	return cont ;
     },
     
     attachPullMenuListeners: function(cont, key, options) {
-    	var dragStartTime, dragStartPos, dragMenuIsOpened = false, isDraggable = false, selectedMenu = null ;
     	var me = this ;
-    	// TODO: animProp for spacer (spacerProp??)
-    	var animProp = this.getAnimationProperty(key) ;
-    	var spacerProp = key == 'top' || key == 'bottom' ? 'height':'width' ;
-    	var parentSize = 0 ;
-    	var pageXY = animProp == 'height' ? 'pageY':'pageX';
-    	var menuIndex = key == 'bottom' || key == 'right' ? 2 : 0 ;
-    	var position ;
+    	var menu  = { isAnimating: false, isOpenend: false, isDraggable: false, move: this.getAnimationProperty(key), parentSize: null } ;
+    	var mngr = { startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', position: null } ;
     	
     	this.parent.element.on({
         	tap: function(e, node) {
-        		if ( !me.getIsAnimating() && me.menuIsDraggable) {
-        			position = - me.mdim[key] + me.getDragBarWidth() + me.getRelativeCoord(key, e[pageXY], parentSize)  - dragStartPos ;
-        			if ( !dragMenuIsOpened && position < me.getDragBarWidth() ) {
+        		if ( !menu.isAnimating && menu.isDraggable) {
+        			position = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize ) ;
+        			if ( menu.isDraggable && position < me.getDragBarWidth() ) {
         				//setTimeout( function(){Ext.Anim.run(cont, 'fade', { out: true, duration: 1000, autoClear: false }) ;}, 1000 ) ;
-        				cont.hide();
+        				cont.element.dom.style[key] = '' ;
+        				cont.element.setStyle(key, -me.mdim[key] + 'px') ;
+        				menu.isDraggable = false ;
         			}
         		}
-    			me.menuIsDraggable = false ;
+    			menu.isDraggable = false ;
         	},
         	drag: function(e, node) {
-        		if ( !me.getIsAnimating() && me.menuIsDraggable ) {
-        			position = !dragMenuIsOpened ? - me.mdim[key] + me.getDragBarWidth() + me.getRelativeCoord(key, e[pageXY], parentSize) - dragStartPos : me.getRelativeCoord(key, e[pageXY], parentSize)  - me.mdim[key];
-        			console.log(position) ;
-        			if ( position >= 0  ) {
+        		if ( !menu.isAnimating && menu.isDraggable ) {
+        			position = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize ) ;
+        			if ( position - me.mdim[key] >= 0  ) {  
         				cont.element.dom.style[key] = '' ;
         				cont.element.setStyle(key, '0px') ;
-        				cont.getItems().items[1].element.dom.style[spacerProp] = '' ;
-        				cont.getItems().items[1].element.dom.style[spacerProp] = position  + 'px';
+        				
+        				cont.element.dom.style[menu.move] = '' ;
+        				cont.element.dom.style[menu.move] = position + 'px' ;
         			}
         			else {
-        				cont.getItems().items[1].element.dom.style[spacerProp] = 0 ;
+        				cont.element.dom.style[menu.move] = '' ;
+        				cont.element.dom.style[menu.move] = me.mdim[key] + 'px' ;
+        				
         				cont.element.dom.style[key] = '' ;
-        				cont.element.setStyle(key, position + 'px') ;
+        				cont.element.setStyle(key, (position - me.mdim[key]) + 'px') ;
         			}
         		}
         		
         	},
         	dragend: function(e, node) {
-        				//me.hidePullMenu(cont.getItems().items[menuIndex], cont.getItems().items[1], position, parentSize) ; 
-        		if ( me.getIsAnimating() == false && me.menuIsDraggable ) {
-        			position = - me.mdim[key] + me.getDragBarWidth() + me.getRelativeCoord(key, e[pageXY], parentSize)  - dragStartPos ;
-        			console.log("timediff=" + (new Date().getTime() - dragStartTime) + " en distdiff=" + Math.abs(dragStartPos - e[pageXY])) ;
-        			if ( (new Date().getTime() - dragStartTime) < 1000 && Math.abs(dragStartPos - e[pageXY]) > 50 ) { // swipe
-        				console.log("SWIPEEEEE " + dragStartPos + " vs " + e[pageXY]) ;
-        				if ( dragStartPos > me.getRelativeCoord(key, e[pageXY], parentSize) ) { // determine direction of swipe
-        					// Todo: close menu
-        					console.log('close menu') ;
-        					me.hidePullMenu(cont, key, menuIndex, spacerProp, parentSize) ; 
-        					dragMenuIsOpened = false ;
+        		if ( !menu.isAnimating && menu.isDraggable ) {
+        			position = me.getRelativeCoord( key, e[mngr.pageXY], menu.parentSize ) ;
+        			
+        			if ( (new Date().getTime() - mngr.startTime) < 1000 && Math.abs(mngr.startPos - e[mngr.pageXY]) > 50 ) { // swipe
+        				if ( mngr.startPos > position ) { // determine direction of swipe
+        					me.hidePullMenu(cont, key, position, menu.parentSize, menu.move) ;
+        					menu.isOpened = false ;
         				}
         				else {
-        					console.log('show menu')
-        					me.showPullMenu(cont, key, menuIndex, spacerProp, parentSize) ; 
-        					dragMenuIsOpened = true ;
-        					//me.hidePullMenu(cont, this.parent.element.getHeight()) ;
+        					me.showPullMenu(cont, key, position, menu.parentSize, menu.move) ;
+        					menu.isOpened = true ;
         				}
         			}
         			else  {
-        				if ( parentSize/2 > position + me.mdim[key]) {
-        					//me.hidePullMenu(cont, key, menuIndex, spacerProp, parentSize) ; 
-        					me.hidePullMenu(cont, key, menuIndex, spacerProp, parentSize) ; 
-        					dragMenuIsOpened = false ;
+        				if ( menu.parentSize/2 > position ) {
+        					me.hidePullMenu(cont, key, position, menu.parentSize, menu.move) ;
+        					menu.isOpened = false ;
         				}
         				else {
-        					me.showPullMenu(cont, key, menuIndex, spacerProp, parentSize) ; 
-        					dragMenuIsOpened = true ;
+        					me.showPullMenu(cont, key, position, menu.parentSize, menu.move) ;
+        					menu.isOpened = true ;
         				}
        				}
         		}
-        		this.menuIsDraggable = false ;
+        		menu.isDraggable = false ;
         	}, 
+    		
         	touchstart: function(e, node) { 
-				this.show() ; 
-        		parentSize =  me.parent.element[ animProp == 'height' ? 'getHeight':'getWidth']() ;
-        		dragStartTime = new Date().getTime() ;
-        		dragStartPos = me.getRelativeCoord(key, e[pageXY], parentSize) ;
+        		if ( !menu.isAnimating ) {
+        			// initialze
+        			menu.parentSize =  me.parent.element[ menu.move == 'height' ? 'getHeight':'getWidth']() ;
+        			mngr.startTime = new Date().getTime() ;
+        			mngr.startPos  = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize) ;
         		
-        		
-    	
-        		if ( !me.getIsAnimating()) {
-        			//alert("VOOR " + e[pageXY] + " en " + parseInt(me.getDragBarWidth())) ;
-        			
-        			if ( dragMenuIsOpened == false && dragStartPos <= 2*me.getDragBarWidth() ) {
-        					me.menuIsDraggable = true ;
+        			if ( !menu.isOpened && mngr.startPos <= 2*me.getDragBarWidth() ) {
+        					menu.isDraggable = true ;
         					//Ext.Anim.run(cont, 'fade', { out: false, duration: 500, autoClear: false }) ;
-        					// init spacer
-            				cont.getItems().items[1].element.dom.style[animProp] = '' ; // reset
-            				cont.getItems().items[1].element.dom.style[animProp] = '0px' ; // reset
+        					
+        					// init menu
+        					cont.element.dom.style[menu.move] = '' ;
+        					cont.element.dom.style[menu.move] = me.mdim[key] + 'px' ;
+            				
             				// position menu outside viewport
-            				this.element.dom.style[key] = '' ; // reset
-            				//alert('m=' + me.mdim.top) ;
-            				this.element.dom.style[key] =  (- me.mdim[key] + me.getDragBarWidth()) + 'px' ;
+            				this.element.dom.style[key] = '' ; 
+            				this.element.dom.style[key] = (-me.mdim[key] + me.getDragBarWidth())  + 'px' ;
         			}
-        			else if ( dragMenuIsOpened == true && dragStartPos > parentSize - me.getDragBarWidth()) {
-        				me.menuIsDraggable = true ;
+        			else if ( menu.isOpened && mngr.startPos > menu.parentSize - me.getDragBarWidth()) {
+        				menu.isDraggable = true ;
         			}
         		}
         		//e.event.stopImmediatePropagation() ;
@@ -311,35 +301,38 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 //    	});
     },
     
-    hidePullMenu: function(cont, key, menuIndex, spacerProp, sizeParent ) {
+    //me.hidePullMenu(cont, key, position, menu.parentSize) ;
+    
+    hidePullMenu: function(cont, key, position, sizeParent, property ) {
     	var me = this ;
-    	var sizeSpacer = cont.getItems().items[1].element[spacerProp == 'height' ? 'getHeight':'getWidth']() ;
-    	var sizeMenu = cont.getItems().items[menuIndex].element[key == 'top' || key == 'bottom' ? 'getHeight':'getWidth']() ;
-    	if ( sizeSpacer > 0 ) { // animate spacer first, then the menu
-    		this.animatePullMenu(cont.getItems().items[1], spacerProp, 0, sizeSpacer, function(){
-    			me.animatePullMenu(cont, key, -sizeMenu, sizeMenu, function(){ setTimeout(function(){cont.hide();},500);}) ;
-    		});
-    	}
-    	else {
-    			this.animatePullMenu(cont, key, -sizeMenu, sizeMenu, function(){ setTimeout(function(){cont.hide();},500);}) ;
-    	}
+    	var hideMenu = function() {
+    		var total = me.mdim[key] - me.getDragBarWidth() + (position < me.mdim[key] ? (me.mdim[key] - position) : 0) ; 
+    		me.animatePullMenu(cont, key, -me.mdim[key], total, function(){ 
+				setTimeout(function(){
+					cont.element.dom.style[key] = '' ;
+    				cont.element.setStyle(key, -2*me.mdim[key] + 'px') ; // make sure its off screen
+				},200);}) ;
+    	} ;
+    	if ( position > this.mdim[key]) 
+    		this.animatePullMenu( cont, property, me.mdim[key], position - me.mdim[key], hideMenu ) ;
+    	else
+    		hideMenu() ;
     },
-    showPullMenu: function(cont, key, menuIndex, spacerProp, sizeParent ) {
+    showPullMenu: function(cont, key, position, sizeParent, property  ) {
     	var me = this ;
-    	var menuPos = parseInt(cont.element.dom.style[key]) ;
-    	var sizeMenu = cont.getItems().items[menuIndex].element[key == 'top' || key == 'bottom' ? 'getHeight':'getWidth']() ;
-    	if ( menuPos != 0 ) { // first animate menu
-    		this.animatePullMenu(cont, key, 0, Math.abs(menuPos), function(){
-    			me.animatePullMenu(cont.getItems().items[1], spacerProp, sizeParent - me.mdim[key], sizeParent - me.mdim[key]  ) ;
+    	var showMenu = function() {
+    		me.animatePullMenu(cont, property, sizeParent, sizeParent - (position>me.mdim[key]?position:me.mdim[key]), function(){
+    			cont.element.dom.style[property] = '' ;
+				cont.element.dom.style[property] = '100%' ; // fix resize issues when menu isOpened
     		}) ;
-    	}
-    	else { // animate spacer
-   			me.animatePullMenu(cont.getItems().items[1], spacerProp, sizeParent - me.mdim[key], sizeParent - me.mdim[key] - parseInt(cont.getItems().items[1].element.dom.style[spacerProp])  ) ;
-    	}
+    	} ;
+    	if ( position < this.mdim[key]) 
+    		this.animatePullMenu( cont, key, 0, me.mdim[key] - position, showMenu ) ;
+    	else
+    		showMenu() ;
     },
     
     animatePullMenu: function(comp, prop, to, total, callback ){
-    	console.log("close " + to) ;
     	var me = this ;
     	if ( !this.getIsAnimating() ) {
     		this.setIsAnimating(true) ;
@@ -356,6 +349,30 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 			console.dir(config);
 			Ext.Animator.run(config) ; 
     	}
+    },
+    
+    /*
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    -webkit-box: box;
+    display: -webkit-box;
+    height: 100%;
+    */
+    getHtmlDragBar: function(key) {
+    	 return ['<div style="background-color:black;display:-webkit-box;padding:1px;height:100%;width:100%;-webkit-box-pack: center;-webkit-box-align: center;">',
+		   		key == 'top' || key == 'bottom' ?
+		       		'<div style="margin-left:auto;margin-right:auto;margin-top:4px;border-top:2px solid grey;border-bottom: 2px solid grey;width:50px;height:10px;"></div>'
+		       			:
+		       		'<div style="border-left:2px solid grey;border-right: 2px solid grey;height:50px;width:10px;"></div>',
+		   '</div>'].join('') ;
+    	 /*
+    	 return ['<div style="background-color:black;padding:1px;position:relative;height:100%;width:100%">',
+		   		key == 'top' || key == 'bottom' ?
+		       		'<div style="margin-left:auto;margin-right:auto;margin-top:4px;border-top:2px solid grey;border-bottom: 2px solid grey;width:50px;height:10px;"></div>'
+		       			:
+		       		'<div style="position:absolute;top:50%;margin-top:-25px;border-left:2px solid grey;border-right: 2px solid grey;height:50px;width:10px;"></div>',
+		   '</div>'].join('') ;
+		   */
     },
     
     

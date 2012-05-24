@@ -17,7 +17,8 @@ Ext.define('GS.view.PullMenuLeftView', {
                      			left: 	{
                      						xclass: 'GS.view.MenuVertical', 
                      						mtype: 'slide',
-                     						fill: true 
+                     						fill: true,
+                     						spacerDisabled: true
                      				 	}/*,
                      			bottom: 	{
                      						xclass: 'GS.view.MenuDrag', 

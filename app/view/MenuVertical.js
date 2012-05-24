@@ -1,23 +1,20 @@
 Ext.define('GS.view.MenuVertical', {
-	extend: 'Ext.Panel', 
-	xtype: 'menuvertical',
-	config: {
-		layout: 'vbox',
-		width: '100px',
-		items: [
-	        {
-	        	xtype: 'button',
-	        		flex: 1,
-	        	text: 'Button1'
-	        }, {
-	        	xtype: 'button',
-	        		flex: 1,
-	        	text: 'Button2'
-	        }, {
-	        	xtype: 'button',
-	        		flex: 1,
-	        	text: 'Button3'
-	        }
-	     ]
-	 }
-});
+	    extend: 'Ext.List',
+	    xtype: 'verticalmenu',
+	    requires: ['GS.model.President','GS.store.Presidents'],
+
+
+	    config: {
+	        listeners: {
+	        	painted: function(){
+	        	}
+	        },
+	    	title: 'American Presidents',
+	        grouped: true,
+	        itemTpl: '{firstName} {lastName}',
+	        store: 'Presidents',
+	        onItemDisclosure: true,
+	        width: '100%',
+	        style: 'min-width:300px'
+	    }
+	});

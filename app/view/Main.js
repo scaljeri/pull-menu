@@ -11,7 +11,13 @@ Ext.define("GS.view.Main", {
                 iconCls: 'home',
                 
                 styleHtmlContent: true,
-                scrollable: true,
+                style: {
+            		backgroundImage: 'url(resources/images/android_back1.jpeg)',
+            		backgroundRepeat: 'no-repeat',
+            		backgroundPosition: 'center',
+            		backgroundSize: '100% 100%'
+        		},
+                scrollable: false,
 
                 items: {
                     docked: 'top',
@@ -28,13 +34,19 @@ Ext.define("GS.view.Main", {
             {
                 title: 'PullMenuTop',
                 iconCls: 'action',
-                xtype: 'pullmenutop'
+                xtype: 'pullmenutop',
+                id: 'pull-top-demp'
             },	
             {
                 title: 'PullMenuLeft',
                 iconCls: 'action',
                 xtype: 'pullmenuleft'
-            }
+            }/*,
+            {
+                title: 'PullMenueft',
+                iconCls: 'action',
+                xtype: 'gscontainer'
+            }*/
         ]
     }
 });

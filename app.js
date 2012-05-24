@@ -12,7 +12,10 @@ Ext.application({
         'Ext.Anim'
     ],
 
-    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag'],
+    controllers: ['Main'],
+    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag','CC'],
+    modesl: ['Presidents'],
+    stores: ['Presidents'],
 
     icon: {
         57: 'resources/icons/Icon.png',

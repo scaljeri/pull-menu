@@ -4,15 +4,12 @@ Ext.define('GS.view.PullMenuTopView', {
 	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuVertical', 'GS.view.MenuHorizontal'],
 	config: {
 		title: 'Pull to Refresh Demo',
+		layout: 'hbox',
     	plugins: [
         	{
             	xclass: 'Scaljeri.plugin.PullMenu',
             	pullRefreshText: 'Pull down for more new Tweets!',
-            	items: /*{ top: 'GS.view.MenuDrag', 
-            			 left: 'GS.view.MenuVertical',//{ xlcass: 'GS.view.MenuVertical', overlay: true }
-            		     right: 'GS.view.MenuVertical', 
-            		     bottom: 'GS.view.MenuHorizontal' 
-            		}*/
+            	items: 
             			{ 	
                      			top: 	{
                      						xclass: 'GS.view.MenuDrag', 
@@ -40,18 +37,20 @@ Ext.define('GS.view.PullMenuTopView', {
                      		} 
         	}
     	],
-		 layout: 'hbox',
 		 scrollable: {
 		        direction: 'none'//'vertical' // 'both'
 		    },
     	 items: [{
-    	        html: 'First Panel',
-    	        style: 'background-color: #5E99CC;'
-    	    },{
-    	    	html: 'First Panel',
-    	        style: 'background-color: #5E99CC;'
-    	    	
-    	    }]
+    	 		xtype: 'panel',
+    	 		flex: 1,
+   				style: {
+   					backgroundImage: 'url(resources/images/android_back3.jpg)',
+    				backgroundRepeat: 'no-repeat',
+    				backgroundPosition: 'center',
+    				backgroundSize: '100% 100%'
+				},
+    	    }
+    	    ]
 
 	}
 });
