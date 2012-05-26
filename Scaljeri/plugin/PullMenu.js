@@ -23,6 +23,12 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         snappingAnimationDuration: 150, // TODO: remove?!
         animationSpeed: 1000, // pixels per second
         
+        animations: {
+        	constant: 	true,
+        	fixed: 		false,
+        	twospeeds:	false
+        },
+        
         /*
          * This function is called when the menu 'show' or 'hide' animation is completed.
          */
@@ -117,13 +123,12 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     				items[k].fill = true ;
     		}
     		// merge with other defaults
-    		//items[k] = Ext.Object.merge({}, { overlay: true }, items[k] ) ;
+    		items[k] = Ext.Object.merge({}, { fill: true }, items[k] ) ;
     		(function(key){ // closure stuff (use 'me' instead of this)
     			me.menus[key] = me[ me.isScrollable(key) ? 'createScrollableMenu':'createPullMenu'](key, me.getItems()[key]) ;
     			me.menus[key].on({
     	  			painted: function(){ // when painted the sizes of the menu is known
     	  						var xy = key == 'top' || key == 'bottom' ? 'getHeight' : 'getWidth' ;
-    	  						console.log("SIZES FOR " + key  + " --> " + xy) ;
     	  						//console.log('size is ' + this.getItems().items[0].element[xy]()  + " and " + this.getItems().items[2].element[xy]() + " ======= " + this.element[xy]()) ;
     	   						//me.mdim[key] = this.getItems().items[0].element[xy]() +  this.getItems().items[2].element[xy]() ;
     	   						me.mdim[key] = this.element[xy]() ;
@@ -201,7 +206,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     
     attachPullMenuListeners: function(cont, key, options) {
     	var me = this ;
-    	var menu  = { isAnimating: false, isOpenend: false, isDraggable: false, move: this.getAnimationProperty(key), parentSize: null } ;
+    	var menu  = { isAnimating: false, isOpened: false, isDraggable: false, move: this.getAnimationProperty(key), parentSize: null } ;
     	var mngr = { startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', position: null } ;
     	
     	this.parent.element.on({
@@ -214,25 +219,31 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         				cont.element.setStyle(key, -me.mdim[key] + 'px') ;
         				menu.isDraggable = false ;
         			}
+        			menu.isDraggable = false ;
         		}
-    			menu.isDraggable = false ;
         	},
         	drag: function(e, node) {
         		if ( !menu.isAnimating && menu.isDraggable ) {
         			position = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize ) ;
-        			if ( position - me.mdim[key] >= 0  ) {  
-        				cont.element.dom.style[key] = '' ;
-        				cont.element.setStyle(key, '0px') ;
-        				
-        				cont.element.dom.style[menu.move] = '' ;
-        				cont.element.dom.style[menu.move] = position + 'px' ;
+        			if ( options.fill == true || position < me.mdim[key]){
+        				if ( position - me.mdim[key] >= 0  ) {  
+        					cont.element.dom.style[key] = '' ;
+        					cont.element.setStyle(key, '0px') ;
+	        				
+        					cont.element.dom.style[menu.move] = '' ;
+        					cont.element.dom.style[menu.move] = position + 'px' ;
+        				}
+        				else {
+        					cont.element.dom.style[menu.move] = '' ;
+        					cont.element.dom.style[menu.move] = me.mdim[key] + 'px' ;
+	        				
+        					cont.element.dom.style[key] = '' ;
+        					cont.element.setStyle(key, (position - me.mdim[key]) + 'px') ;
+        				}
         			}
         			else {
-        				cont.element.dom.style[menu.move] = '' ;
-        				cont.element.dom.style[menu.move] = me.mdim[key] + 'px' ;
-        				
         				cont.element.dom.style[key] = '' ;
-        				cont.element.setStyle(key, (position - me.mdim[key]) + 'px') ;
+    					cont.element.setStyle(key, '0px') ;
         			}
         		}
         		
@@ -241,28 +252,27 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         		if ( !menu.isAnimating && menu.isDraggable ) {
         			position = me.getRelativeCoord( key, e[mngr.pageXY], menu.parentSize ) ;
         			
+   					menu.isOpened = true ;
         			if ( (new Date().getTime() - mngr.startTime) < 1000 && Math.abs(mngr.startPos - e[mngr.pageXY]) > 50 ) { // swipe
         				if ( mngr.startPos > position ) { // determine direction of swipe
-        					me.hidePullMenu(cont, key, position, menu.parentSize, menu.move) ;
+        					me.hidePullMenu(cont, key, position, options.fill == false ? me.mdim[key]:menu.parentSize, menu.move) ;
         					menu.isOpened = false ;
         				}
-        				else {
-        					me.showPullMenu(cont, key, position, menu.parentSize, menu.move) ;
-        					menu.isOpened = true ;
+        				else if ( options.fill == true || position < me.mdim[key]){
+        					me.showPullMenu(cont, key, position, options.fill == false ? me.mdim[key] : menu.parentSize, menu.move) ;
         				}
         			}
         			else  {
         				if ( menu.parentSize/2 > position ) {
-        					me.hidePullMenu(cont, key, position, menu.parentSize, menu.move) ;
+        					me.hidePullMenu(cont, key, position, options.fill == false ? me.mdim[key]:menu.parentSize, menu.move) ;
         					menu.isOpened = false ;
         				}
-        				else {
-        					me.showPullMenu(cont, key, position, menu.parentSize, menu.move) ;
-        					menu.isOpened = true ;
+        				else if ( options.fill == true || position < me.mdim[key]){
+        					me.showPullMenu(cont, key, position, options.fill == false ? me.mdim[key] : menu.parentSize, menu.move) ;
         				}
        				}
+        			menu.isDraggable = false ;
         		}
-        		menu.isDraggable = false ;
         	}, 
     		
         	touchstart: function(e, node) { 
@@ -272,6 +282,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         			mngr.startTime = new Date().getTime() ;
         			mngr.startPos  = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize) ;
         		
+        			console.log("XX=" + menu.isOpened) ;
         			if ( !menu.isOpened && mngr.startPos <= 2*me.getDragBarWidth() ) {
         					menu.isDraggable = true ;
         					//Ext.Anim.run(cont, 'fade', { out: false, duration: 500, autoClear: false }) ;
@@ -284,8 +295,11 @@ Ext.define('Scaljeri.plugin.PullMenu', {
             				this.element.dom.style[key] = '' ; 
             				this.element.dom.style[key] = (-me.mdim[key] + me.getDragBarWidth())  + 'px' ;
         			}
-        			else if ( menu.isOpened && mngr.startPos > menu.parentSize - me.getDragBarWidth()) {
-        				menu.isDraggable = true ;
+        			else if ( menu.isOpened ) {
+        				if ( options.fill == true && mngr.startPos > menu.parentSize - me.getDragBarWidth() ) 
+        					menu.isDraggable = true ;
+        				else if ( options.fill == false && mngr.startPos >= me.mdim[key] - me.getDragBarWidth() && mngr.startPos <= me.mdim[key] )
+        					menu.isDraggable = true ;
         			}
         		}
         		//e.event.stopImmediatePropagation() ;
@@ -321,10 +335,13 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     showPullMenu: function(cont, key, position, sizeParent, property  ) {
     	var me = this ;
     	var showMenu = function() {
-    		me.animatePullMenu(cont, property, sizeParent, sizeParent - (position>me.mdim[key]?position:me.mdim[key]), function(){
-    			cont.element.dom.style[property] = '' ;
-				cont.element.dom.style[property] = '100%' ; // fix resize issues when menu isOpened
-    		}) ;
+    		var total = sizeParent - (position>me.mdim[key]?position:me.mdim[key]) ;
+    		if ( total > 0 ) {
+    			me.animatePullMenu(cont, property, sizeParent, total, function(){
+    				cont.element.dom.style[property] = '' ;
+					cont.element.dom.style[property] = '100%' ; // fix resize issues when menu isOpened
+    			}) ;
+    		}
     	} ;
     	if ( position < this.mdim[key]) 
     		this.animatePullMenu( cont, key, 0, me.mdim[key] - position, showMenu ) ;

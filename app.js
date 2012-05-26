@@ -13,7 +13,7 @@ Ext.application({
     ],
 
     controllers: ['Main'],
-    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag','CC'],
+    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag','CC', 'MenuBottom'],
     modesl: ['Presidents'],
     stores: ['Presidents'],
 
