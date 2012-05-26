@@ -16,18 +16,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          */
         scrollable: null,
 
-        /*
-         * @cfg {Number} snappingAnimationDuration The duration for snapping back animation after the data has been refreshed
-         * @accessor
-         */
-        snappingAnimationDuration: 150, // TODO: remove?!
-        animationSpeed: 1000, // pixels per second
-        
-        animations: {
-        	constant: 	true,
-        	fixed: 		false,
-        	twospeeds:	false
-        },
+        animationFillSpeed: 1000, // number of pixels per second
+        animationMenuSpeed: 300, // number of pixels per second
+        delayHide: 500, // delay hiding the dragbar (milliseconds)
         
         /*
          * This function is called when the menu 'show' or 'hide' animation is completed.
@@ -93,7 +84,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     /*
      * 
      */
-    menuIsDraggable: false,
 
     initialize: function() {
         this.callParent();
@@ -229,9 +219,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         				if ( position - me.mdim[key] >= 0  ) {  
         					cont.element.dom.style[key] = '' ;
         					cont.element.setStyle(key, '0px') ;
-	        				
-        					cont.element.dom.style[menu.move] = '' ;
-        					cont.element.dom.style[menu.move] = position + 'px' ;
+        					
+       						cont.element.dom.style[menu.move] = '' ;
+        					cont.element.dom.style[menu.move] = (position <= menu.parentSize ? position:menu.parentSize) + 'px' ;
         				}
         				else {
         					cont.element.dom.style[menu.move] = '' ;
@@ -321,11 +311,12 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     	var me = this ;
     	var hideMenu = function() {
     		var total = me.mdim[key] - me.getDragBarWidth() + (position < me.mdim[key] ? (me.mdim[key] - position) : 0) ; 
-    		me.animatePullMenu(cont, key, -me.mdim[key], total, function(){ 
+    		me.animatePullMenu(cont, key, -me.mdim[key] + (me.getDelayHide() ? me.getDragBarWidth() : 0 ), total, function(){ 
 				setTimeout(function(){
 					cont.element.dom.style[key] = '' ;
     				cont.element.setStyle(key, -2*me.mdim[key] + 'px') ; // make sure its off screen
-				},200);}) ;
+    				me.getReadyFn(false) ;
+				},me.getDelayHide());}) ;
     	} ;
     	if ( position > this.mdim[key]) 
     		this.animatePullMenu( cont, property, me.mdim[key], position - me.mdim[key], hideMenu ) ;
@@ -340,6 +331,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     			me.animatePullMenu(cont, property, sizeParent, total, function(){
     				cont.element.dom.style[property] = '' ;
 					cont.element.dom.style[property] = '100%' ; // fix resize issues when menu isOpened
+    				me.getReadyFn(true) ;
     			}) ;
     		}
     	} ;
@@ -355,7 +347,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     		this.setIsAnimating(true) ;
 			var config = {
 					element: comp.element,
-    		    	duration: Math.round(total / this.getAnimationSpeed() * 1000),
+    		    	duration: Math.round(total / (prop == 'height' || prop == 'width' ? this.getAnimationFillSpeed():this.getAnimationMenuSpeed()) * 1000),
     		    	easing: 'ease-in',
     		    	preserveEndState: true,
     		    	onEnd: function(){ console.log("X") ;me.setIsAnimating(false); callback && callback();},

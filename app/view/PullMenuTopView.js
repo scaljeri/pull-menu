@@ -11,16 +11,16 @@ Ext.define('GS.view.PullMenuTopView', {
             	pullRefreshText: 'Pull down for more new Tweets!',
             	items: 
             			{ 	
-                     		/*	top: 	{
+                     			top: 	{
                      						xclass: 'GS.view.MenuDrag', 
                      						mtype: 'slide',
                      						fill: true 
-                     				 	},*/
+                     				 	},/*
                      			bottom: 	{
                      						xclass: 'GS.view.MenuBottom', 
                      						mtype: 'slide',
                      						fill: false 
-                     				 	}/*,
+                     				 	}*//*,
                      			left: 	{
                      						xclass: 'GS.view.MenuVertical',
                      						mtype: 'overlay'
