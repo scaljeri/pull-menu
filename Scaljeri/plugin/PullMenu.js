@@ -36,7 +36,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * 			top: 	{
          * 						xclass: 'GS.view.MenuDrag', 
          * 						mtype: 'slide',
-         * 						fill: false 
+         * 						fill: false,
+         * 						scrollable: 'vertical',
+         * 						id: '123'
          * 				 	},
          * 			left: 	{
          * 						xclass: 'GS.view.MenuHorizontal',
@@ -156,10 +158,15 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     	var containerConfig = {
     		xtype: 'panel',
     		layout: key == 'top' || key == 'bottom' ? 'vbox' : 'hbox',
-       		cls: 'pullmenu',
-       		style: 'overflow:hidden',
-       		padding: 0
+       		cls: 'pullmenu' +  (options.cls ? ' ' + options.cls : ''),
+       		style: 'overflow:hidden;',
+       		zIndex: 100,
+       		padding: 0,
+       		id: options.id||null
     	} ;
+    	if ( options.scrollable )
+    		containerConfig.scrollable = options.scrollable ;
+    	
     	containerConfig[key == 'top' || key == 'bottom' ? 'width' : 'height'] = '100%' ;
     	containerConfig[key] = '-1000px' ; // hide panel off screen
     	
@@ -347,7 +354,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     		this.setIsAnimating(true) ;
 			var config = {
 					element: comp.element,
-    		    	duration: Math.round(total / (prop == 'height' || prop == 'width' ? this.getAnimationFillSpeed():this.getAnimationMenuSpeed()) * 1000),
+    		    	duration: Math.round(total/ (prop == 'height' || prop == 'width' ? this.getAnimationFillSpeed():this.getAnimationMenuSpeed())*1000),
     		    	easing: 'ease-in',
     		    	preserveEndState: true,
     		    	onEnd: function(){ console.log("X") ;me.setIsAnimating(false); callback && callback();},

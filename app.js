@@ -9,11 +9,13 @@ Ext.application({
 
     requires: [
         'Ext.MessageBox',
-        'Ext.Anim'
+        'Ext.Anim',
+        'Ext.form.FieldSet',
+        'Ext.Img'
     ],
 
     controllers: ['Main'],
-    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag','CC', 'MenuBottom'],
+    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'PullMenuTopView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag','CC', 'MenuBottom'],
     modesl: ['Presidents'],
     stores: ['Presidents'],
 

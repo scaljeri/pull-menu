@@ -2,19 +2,21 @@ Ext.define('GS.view.PullMenuTopView', {
 	extend: 'Ext.Panel', 
 	xtype: 'pullmenutop',
 	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuVertical', 'GS.view.MenuHorizontal'],
+	id: 'topdragmenu',
 	config: {
 		title: 'Pull to Refresh Demo',
 		layout: 'hbox',
     	plugins: [
         	{
             	xclass: 'Scaljeri.plugin.PullMenu',
-            	pullRefreshText: 'Pull down for more new Tweets!',
             	items: 
             			{ 	
                      			top: 	{
                      						xclass: 'GS.view.MenuDrag', 
                      						mtype: 'slide',
-                     						fill: true 
+                     						fill: true,
+                     						scrollable: 'vertical',
+                     						id: 'my-top-menu'
                      				 	},/*
                      			bottom: 	{
                      						xclass: 'GS.view.MenuBottom', 
@@ -48,9 +50,48 @@ Ext.define('GS.view.PullMenuTopView', {
     				backgroundRepeat: 'no-repeat',
     				backgroundPosition: 'center',
     				backgroundSize: '100% 100%'
-				},
-    	    }
-    	    ]
-
+   				},
+   				items:[{
+   					xtype: 'fieldset',
+   					centered: true,
+   					title: 'Menu animation settings',
+   					defaults: {
+   						labelWidth:'200px'
+   					},
+		       		items: [
+		       		        {
+		               			xtype: 'textfield',
+		               			name : 'fill speed',
+		               			label: 'fill screen speed',
+		               			cls: 'fillspeed',
+		               			value: 1000,
+		               			listeners: {
+		               				focus: function(){
+		               					console.log('x') ;
+		               				}
+		               			}
+		           			},
+		           			{
+		               			xtype: 'textfield',
+		               			name : 'menu',
+		               			label: 'menu speed',
+		               			value: 300,
+		               			cls: 'menuspeed',
+		           			},
+		           			{
+		               			xtype: 'textfield',
+		               			name : 'delay',
+		               			label: 'delay hide drag-bar',
+		               			value: 500,
+		               			cls: 'delay',
+		           			},
+		           			{
+		           				xtype: 'button',
+		           				text: 'apply settings',
+		           				id: 'applyTopMenuSettings'
+		           			}
+		       			]
+   				}]
+			}]
 	}
 });

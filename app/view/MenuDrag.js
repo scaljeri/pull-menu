@@ -4,18 +4,17 @@ Ext.define('GS.view.MenuDrag', {
 	config: {
 		layout: 'hbox',
 		width: '100%',
-		height: '50px',
-		style: 'background-color:black;max-height:50px;',
-		items: [
-	        {
-	        	xtype: 'button',
-	        		flex: 1,
-	        	text: 'Drag Button1'
-	        }, {
-	        	xtype: 'button',
-	        		flex: 1,
-	        	text: 'DragButton2'
-	        }
-	     ]
+		height: '500px',
+		style: 'background-color:black',
+		items: [{
+			xtype: 'image',
+		 	src: 'resources/images/top-menu.png',
+		 	width: '480px',
+		 	height: '500px',
+		 	style: {
+		 		marginLeft: 'auto',
+		 		marginRight: 'auto'
+		 	}
+		}]
 	 }
 });

@@ -45,14 +45,57 @@ Ext.define('GS.view.PullMenuLeftView', {
 		 scrollable: {
 		        direction: 'none'//'vertical' // 'both'
 		    },
-    	 items: [{
-    	        html: 'First Panel',
-    	        style: 'background-color: #5E99CC;'
-    	    },{
-    	    	html: 'First Panel',
-    	        style: 'background-color: #5E99CC;'
-    	    	
-    	    }]
+		   	 items: [{
+	    	 		xtype: 'panel',
+	    	 		flex: 1,
+	   				style: {
+	   					backgroundImage: 'url(resources/images/flower-back1.png)',
+	    				backgroundRepeat: 'no-repeat',
+	    				backgroundPosition: 'center',
+	    				backgroundSize: '100% 100%'
+	   				},
+	   				items:[{
+	   					xtype: 'fieldset',
+	   					centered: true,
+	   					title: 'Menu animation settings',
+	   					defaults: {
+	   						labelWidth:'200px'
+	   					},
+			       		items: [
+			       		        {
+			               			xtype: 'textfield',
+			               			name : 'fill speed',
+			               			label: 'fill screen speed',
+			               			cls: 'fillspeed',
+			               			value: 1000,
+			               			listeners: {
+			               				focus: function(){
+			               					console.log('x') ;
+			               				}
+			               			}
+			           			},
+			           			{
+			               			xtype: 'textfield',
+			               			name : 'menu',
+			               			label: 'menu speed',
+			               			value: 300,
+			               			cls: 'menuspeed',
+			           			},
+			           			{
+			               			xtype: 'textfield',
+			               			name : 'delay',
+			               			label: 'delay hide drag-bar',
+			               			value: 500,
+			               			cls: 'delay',
+			           			},
+			           			{
+			           				xtype: 'button',
+			           				text: 'apply settings',
+			           				id: 'applyLeftMenuSettings'
+			           			}
+			       			]
+	   				}]
+				}]
 
 	}
 });
