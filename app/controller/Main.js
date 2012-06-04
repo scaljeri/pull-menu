@@ -21,12 +21,14 @@ Ext.define('GS.controller.Main', {
             		var fillspeed = pmt.element.query('.fillspeed input')[0].value ;
             		var menuspeed = pmt.element.query('.menuspeed input')[0].value ;
             		var delay     = pmt.element.query('.delay input')[0].value ;
+            		var fps     = pmt.element.query('.fps input')[0].value ;
             		//pmt.plugins
             		for( index in pmt.getPlugins() ) {
             			var menu = pmt.getPlugins()[index] ;
             			menu.setAnimationFillSpeed(fillspeed) ;
             			menu.setAnimationMenuSpeed(menuspeed) ;
             			menu.setDelayHide(delay) ;
+            			menu.setFps(fps) ;
             		}
             	}
             },
@@ -37,12 +39,14 @@ Ext.define('GS.controller.Main', {
             		var fillspeed = pmt.element.query('.fillspeed input')[0].value ;
             		var menuspeed = pmt.element.query('.menuspeed input')[0].value ;
             		var delay     = pmt.element.query('.delay input')[0].value ;
+            		var fps     = pmt.element.query('.fps input')[0].value ;
             		//pmt.plugins
             		for( index in pmt.getPlugins() ) {
             			var menu = pmt.getPlugins()[index] ;
             			menu.setAnimationFillSpeed(fillspeed) ;
             			menu.setAnimationMenuSpeed(menuspeed) ;
             			menu.setDelayHide(delay) ;
+            			menu.setFps(fps) ;
             		}
             	}
             },

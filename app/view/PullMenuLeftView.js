@@ -89,6 +89,13 @@ Ext.define('GS.view.PullMenuLeftView', {
 			               			cls: 'delay',
 			           			},
 			           			{
+			               			xtype: 'textfield',
+			               			name : 'fps',
+			               			label: 'FPS',
+			               			value: 10,
+			               			cls: 'fps',
+			           			},
+			           			{
 			           				xtype: 'button',
 			           				text: 'apply settings',
 			           				id: 'applyLeftMenuSettings'

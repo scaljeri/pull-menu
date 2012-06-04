@@ -1,6 +1,6 @@
 Ext.define("GS.view.Main", {
     extend: 'Ext.tab.Panel',
-    requires: ['Ext.TitleBar'],
+    requires: ['Ext.TitleBar', 'GS.view.PullMenuBottomView'],
     
     config: {
         tabBarPosition: 'bottom',
@@ -22,7 +22,7 @@ Ext.define("GS.view.Main", {
                 items: {
                     docked: 'top',
                     xtype: 'titlebar',
-                    title: 'Welcome to Sencha Touch 2'
+                    title: 'Pull-menu plugin demo'
                 },
                 
                 html: [
@@ -41,7 +41,17 @@ Ext.define("GS.view.Main", {
                 title: 'PullMenuLeft',
                 iconCls: 'action',
                 xtype: 'pullmenuleft'
-            }/*,
+            },{
+                title: 'PullMenuBottom',
+                iconCls: 'action',
+                xtype: 'pullmenubottom'
+            	
+    		},
+            {
+                title: 'AttachedMenu',
+                iconCls: 'action',
+                xtype: 'pullmenuattachedleft'
+            },/*
             {
                 title: 'PullMenueft',
                 iconCls: 'action',

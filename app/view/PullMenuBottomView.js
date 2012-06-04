@@ -1,28 +1,26 @@
-Ext.define('GS.view.PullMenuTopView', {
+Ext.define('GS.view.PullMenuBottomView', {
 	extend: 'Ext.Panel', 
-	xtype: 'pullmenutop',
-	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuVertical', 'GS.view.MenuHorizontal'],
-	id: 'topdragmenu',
+	xtype: 'pullmenubottom',
+	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuBottom'],
 	config: {
 		title: 'Pull to Refresh Demo',
 		layout: 'hbox',
     	plugins: [
         	{
             	xclass: 'Scaljeri.plugin.PullMenu',
+            	pullRefreshText: 'Pull down for more new Tweets!',
             	items: 
             			{ 	
-                     			top: 	{
+                     			/*top: 	{
                      						xclass: 'GS.view.MenuDrag', 
                      						mtype: 'slide',
-                     						fill: true,
-                     						scrollable: 'vertical',
-                     						id: 'my-top-menu'
-                     				 	},/*
+                     						fill: true 
+                     				 	},*/
                      			bottom: 	{
                      						xclass: 'GS.view.MenuBottom', 
                      						mtype: 'slide',
                      						fill: false 
-                     				 	}*//*,
+                     				 	}/*,
                      			left: 	{
                      						xclass: 'GS.view.MenuVertical',
                      						mtype: 'overlay'
@@ -46,7 +44,7 @@ Ext.define('GS.view.PullMenuTopView', {
     	 		xtype: 'panel',
     	 		flex: 1,
    				style: {
-   					backgroundImage: 'url(resources/images/android_back3.jpg)',
+   					backgroundImage: 'url(resources/images/swirl-back2.png)',
     				backgroundRepeat: 'no-repeat',
     				backgroundPosition: 'center',
     				backgroundSize: '100% 100%'
@@ -86,16 +84,9 @@ Ext.define('GS.view.PullMenuTopView', {
 		               			cls: 'delay',
 		           			},
 		           			{
-		               			xtype: 'textfield',
-		               			name : 'fps',
-		               			label: 'FPS',
-		               			value: 10,
-		               			cls: 'fps',
-		           			},
-		           			{
 		           				xtype: 'button',
 		           				text: 'apply settings',
-		           				id: 'applyTopMenuSettings'
+		           				id: 'applyBottomMenuSettings'
 		           			}
 		       			]
    				}]
