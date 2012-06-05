@@ -6,7 +6,8 @@ Ext.define('GS.controller.Main', {
         	topmenu: 'pullmenutop',
         	leftmenu: 'pullmenuleft',
         	bottommenu: 'pullmenubottom',
-        	topmenubutton: 'pullmenutop #applyTopMenuSettings'
+        	topmenubutton: 'pullmenutop #applyTopMenuSettings',
+        	attachedmenu: 'attachedmenus'
         },
         control: {
             'presidentmenu': {
@@ -64,6 +65,26 @@ Ext.define('GS.controller.Main', {
             			menu.setAnimationMenuSpeed(menuspeed) ;
             			menu.setDelayHide(delay) ;
             		}
+            	}
+            },
+            '#applyAttachedMenuSettings': {
+            	tap: function() {
+            		var am = this.getAttachedmenu() ;
+            		var hor = am.element.query('input[name=horizontal]')[0].checked ;
+            		var vert = am.element.query('input[name=vertical]')[0].checked ;
+            		var plugin = am.getPlugins()[0] ; //.hideMenu('left')
+            		
+            		plugin.hideMenu( vert ? 'left':'top')  ;
+            		plugin.hideMenu( vert ? 'right':'bottom')  ;
+            		
+            		var scroll = 'both' ;
+            		if ( hor && !vert ) 
+            			scroll = 'horizontal' ;
+            		else if ( !hor && vert ) 
+            			scroll = 'vertical' ;
+            		else if ( !hor && !vert)
+            			scroll = 'none' ;
+            		am.getScrollable().getScroller().setDirection(scroll) ;
             	}
             }
         	

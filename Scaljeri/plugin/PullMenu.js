@@ -31,10 +31,10 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          */
         scrollable: null,
 
-        animationFillSpeed: 1000, // number of pixels per second
-        animationMenuSpeed: 300, // number of pixels per second
-        delayHide: 500, // delay hiding the dragbar (milliseconds)
-        fps: 10, // frames per second
+        animationFillSpeed: 1000, 	// number of pixels per second
+        animationMenuSpeed: 300, 	// number of pixels per second
+        delayHide: 500, 			// delay hiding the dragbar (milliseconds)
+        fps: 10, 					// frames per second
         
         /*
          * This function is called when the menu 'show' or 'hide' animation is completed.
@@ -50,15 +50,15 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * items: 
          * 		{ 	
          * 			top: 	{
-         * 						xclass: 'GS.view.MenuDrag', 
-         * 						mtype: 'slide',
-         * 						fill: false,
-         * 						scrollable: 'vertical',
-         * 						id: '123'
+         * 						xclass: 'GS.view.MenuDrag',  		// the menu class name
+         * 						mtype: 'slide',				 		// the menu type 
+         * 						fill: false,				 		// fill entire parent component if true
+         * 						scrollable: 'vertical',		 		// make the menu content scrollable
+         * 						id: '123'					 		// id of the menu
          * 				 	},
          * 			left: 	{
          * 						xclass: 'GS.view.MenuHorizontal',
-         * 						mtype: 'append'
+         * 						mtype: 'append'						
          * 					},
          * 			right: 	{
          * 						xclass: 'GS.view.MenuHorizontal',
@@ -88,6 +88,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 
 		/*
 		 * pull menu additional styling
+		 * TODO: not implemented
 		 */
 		pullMenuStyle: {}
         
@@ -98,10 +99,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     prevPosition: { x: 0, y: 0 },
     mdim: { top: 0, bottom: 0, left: 0, right: 0 }, // menu dimensions
     menuVisible: null,  // contains: null, top, bottom, left or right
-
-    /*
-     * 
-     */
 
     initialize: function() {
         this.callParent();
@@ -137,7 +134,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     			me.menus[key].on({
     	  			painted: function(){ // when painted the sizes of the menu is known
     	  						var xy = key == 'top' || key == 'bottom' ? 'getHeight' : 'getWidth' ;
-    	  						//console.log('size is ' + this.getItems().items[0].element[xy]()  + " and " + this.getItems().items[2].element[xy]() + " ======= " + this.element[xy]()) ;
     	   						//me.mdim[key] = this.getItems().items[0].element[xy]() +  this.getItems().items[2].element[xy]() ;
     	   						me.mdim[key] = this.element[xy]() ;
     	   					},
@@ -146,13 +142,11 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     	   				}) ;
     		})(k) ;
     	}
-    	// TODO: me.setItems(items) ; 
-    	// not sure if this is necessary?
+    	me.setItems(items) ; 
     },
     
     // helpers
     isScrollable: function(position) {
-    	console.log("position=" + position);
     	return this.getScrollable() ? this.getScrollable().isAxisEnabled( position == 'top' || position == 'bottom' ? 'y' : 'x' ) : false ;
     },
     getOppositeKey: function(key) {
@@ -163,6 +157,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     },
     getRelativeCoord: function(key, pageXY, parentSize) {
     	return key == 'bottom' || key == 'right' ? parentSize - pageXY : pageXY ;
+    },
+    isPerpendicular: function(key1, key2) {
+    	return key1 == 'top' || key1 == 'bottom' ? key2 == 'top' || key2 == 'bottom' ? false : true : key2 == 'left' || key2 == 'right' ? false : true ;
     },
     
     /* ******************* */
@@ -191,7 +188,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
        			xtype: 'panel',
        			layout: 'vbox',
        			style: 'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
-   				//html: this.getHtmlDragBar(key),
        			items: [{
        				xtype: 'panel',
        				centered:true,
@@ -220,17 +216,16 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     attachPullMenuListeners: function(cont, key, options) {
     	var me = this ;
     	var menu  = { isAnimating: false, isOpened: false, isDraggable: false, move: this.getAnimationProperty(key), parentSize: null } ;
-    	var mngr = { startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', event: null, lastUpdated: new Date().getTime() } ;
+    	var mngr  = { startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', event: null, lastUpdated: new Date().getTime() } ;
     	var fps = 0 ;
     	
     	var lastUpdated = new Date().getTime() ;
     	
-    	var position = null ;
+    	var position = null ; 
     	var dragging = null ;
     	this.parent.element.on({
         	tap: function(e, node) {
         		if ( !menu.isAnimating && menu.isDraggable) {
-        			console.log("CLEAR") ;
         			clearInterval(dragging) ;
         			position = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize ) ;
         			if ( menu.isDraggable && position < me.getDragBarWidth() ) {
@@ -275,6 +270,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     		
         	touchstart: function(e, node) { 
        			mngr.event = null ;
+       			clearInterval(dragging) ;
         		if ( !menu.isAnimating ) {
         			// initialze
         			menu.parentSize =  me.parent.element[ menu.move == 'height' ? 'getHeight':'getWidth']() ;
@@ -306,7 +302,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         				}
         			}
         		}
-        		//e.event.stopImmediatePropagation() ;
         	},
         	swipe: function(e, node) {
         		
@@ -320,7 +315,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     },
     
     updateMenu: function(cont, menu, me, key, options, mngr) {
-    	console.log("repaint") ;
   		if ( !menu.isAnimating && menu.isDraggable && mngr.event != null && new Date().getTime() - mngr.lastUpdated > 10 ) {
   			var position = me.getRelativeCoord(key, mngr.event[mngr.pageXY], menu.parentSize ) ;
 			if ( options.fill == true || position < me.mdim[key]){
@@ -346,8 +340,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 			menu.lastUpdated = new Date().getTime() ;
 		}
     },
-    
-    //me.hidePullMenu(cont, key, position, menu.parentSize) ;
     
     hidePullMenu: function(cont, key, position, sizeParent, property ) {
     	var me = this ;
@@ -401,72 +393,10 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     	}
     },
     
-    /*
-    -webkit-box-pack: center;
-    -webkit-box-align: center;
-    -webkit-box: box;
-    display: -webkit-box;
-    height: 100%;
-    */
-    getHtmlDragBar: function(key) {
-    	 return ['<div style="background-color:black;display:-webkit-box;padding:1px;height:100%;width:100%;-webkit-box-pack: center;-webkit-box-align: center;">',
-		   		key == 'top' || key == 'bottom' ?
-		       		'<div style="margin-left:auto;margin-right:auto;margin-top:4px;border-top:2px solid grey;border-bottom: 2px solid grey;width:50px;height:10px;"></div>'
-		       			:
-		       		'<div style="border-left:2px solid grey;border-right: 2px solid grey;height:50px;width:10px;"></div>',
-		   '</div>'].join('') ;
-    	 /*
-    	 return ['<div style="background-color:black;padding:1px;position:relative;height:100%;width:100%">',
-		   		key == 'top' || key == 'bottom' ?
-		       		'<div style="margin-left:auto;margin-right:auto;margin-top:4px;border-top:2px solid grey;border-bottom: 2px solid grey;width:50px;height:10px;"></div>'
-		       			:
-		       		'<div style="position:absolute;top:50%;margin-top:-25px;border-left:2px solid grey;border-right: 2px solid grey;height:50px;width:10px;"></div>',
-		   '</div>'].join('') ;
-		   */
-    },
-    
-    
-/*
-    
-    animatePullMenu: function(cont, to, hide) {
-    	console.log("close " + to) ;
-    	var me = this ;
-    	if ( !this.getIsAnimating() ) {
-    		this.setIsAnimating(true) ;
-			var config = {
-					element: cont.element,
-    		    	duration: 550,
-    		    	easing: 'ease-in',
-    		    	preserveEndState: true,
-    		    	from: {},
-    		    	to: { top:  to},
-    		    	onEnd: function(){
-	    				me.setIsAnimating(false) ;
-    		    		setTimeout( function(){
-   		    				cont.element.dom.style.height = '' ; // reset
-    		    			if ( hide == true ) {
-    		    				cont.hide() ;
-    		    			}
-    		    			else {
-    		    				cont.element.dom.style.height = '100%' ;
-    		    			}
-    		    		},300) ;
-    		    	}
-			}
-			Ext.Animator.run(config) ; 
-    	}
-		//setTimeout(function(){
-			//CSSStyleDeclaration
-			//Ext.get('ext-menudrag-1').dom.style.top = ''
-			//topmenu.element.setStyle('top', '-1000px!important') ;
-		//}, 650) ;
-    },
-    */
     /* SCROLL-MENU FUNCTIONS */
- 
     
     createScrollableMenu: function(key, options) {
-    	var menu = Ext.create( options.xclass, { cls: 'xxxxxxxxxxxxxx' } ) ;
+    	var menu = Ext.create( options.xclass, {} ) ;
     	var styles = {
     			'position':           'absolute',
 				'display':            '-webkit-box!important',
@@ -564,21 +494,24 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     		
    			var minmax = (key== 'right' || key == 'bottom' ? 'max':'min') + 'Position' ;
     		this.getScrollable()[minmax][scrollAxis] = hide == true ? 0 : sign * this.mdim[key];
-    		this.getScrollable()[minmax][fixedAxis] = 0 ;
+   			this.getScrollable()[minmax][fixedAxis] = 0 ;
     	}
    		this.positionState = { top: 0, bottom: 0, left: 0, right: 0 } ; // reset
    		this.positionState[key] = -this.mdim[key] ;
     },
 
     hideMenu: function(key) {
-        //this.getScrollable().minPosition.x = 0;
-        //this.getScrollable().minPosition.y = 0;
-    	this.showHideMenu(key, true) ;
-    	// TODO: is the below command needed?
-        this.getScrollable().scrollTo(null, 0, true);
+    	if ( this.getItems()[key].mtype == 'slide') {
+    		// TODO
+    	}
+    	else {
+    		this.showHideMenu(key, true) ;
+    		this.getScrollable().scrollTo(null, 0, true);
+    	}
     },
-
-    onBounceBottom: Ext.emptyFn,
+    showMenu: function(key) {
+    	// TODO
+    }
 });
 
 

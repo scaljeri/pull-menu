@@ -15,7 +15,7 @@ Ext.application({
     ],
 
     controllers: ['Main'],
-    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'PullMenuTopView', 'MenuVertical', 'MenuHorizontal', 'MenuDrag', 'MenuBottom', 'PullMenuLeftAttachedView'],
+    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'PullMenuTopView', 'MenuVertical', 'MenuDrag', 'MenuBottom', 'AttachedMenuView'],
     modesl: ['Presidents'],
     stores: ['Presidents'],
 

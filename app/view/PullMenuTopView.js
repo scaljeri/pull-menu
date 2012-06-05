@@ -1,7 +1,7 @@
 Ext.define('GS.view.PullMenuTopView', {
 	extend: 'Ext.Panel', 
 	xtype: 'pullmenutop',
-	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuVertical', 'GS.view.MenuHorizontal'],
+	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuDrag'],
 	id: 'topdragmenu',
 	config: {
 		title: 'Pull to Refresh Demo',
@@ -17,30 +17,12 @@ Ext.define('GS.view.PullMenuTopView', {
                      						fill: true,
                      						scrollable: 'vertical',
                      						id: 'my-top-menu'
-                     				 	},/*
-                     			bottom: 	{
-                     						xclass: 'GS.view.MenuBottom', 
-                     						mtype: 'slide',
-                     						fill: false 
-                     				 	}*//*,
-                     			left: 	{
-                     						xclass: 'GS.view.MenuVertical',
-                     						mtype: 'overlay'
-                     					},
-                     			right: 	{
-                     						xclass: 'GS.view.MenuVertical',
-                     						mtype: 	'append'
-                     					},
-                     			bottom: {
-                     						xclass: 'GS.view.MenuHorizontal',
-                     						mtype: 	'append',//'slide',
-                     						fill: true
-                     					}*/
+                     				 	}
                      		} 
         	}
     	],
 		 scrollable: {
-		        direction: 'none'//'vertical' // 'both'
+		        direction: 'none'
 		    },
     	 items: [{
     	 		xtype: 'panel',

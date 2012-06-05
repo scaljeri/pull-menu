@@ -44,7 +44,7 @@ Ext.define('GS.view.PullMenuBottomView', {
     	 		xtype: 'panel',
     	 		flex: 1,
    				style: {
-   					backgroundImage: 'url(resources/images/swirl-back2.png)',
+   					backgroundImage: 'url(resources/images/android_back3.jpg)',
     				backgroundRepeat: 'no-repeat',
     				backgroundPosition: 'center',
     				backgroundSize: '100% 100%'
