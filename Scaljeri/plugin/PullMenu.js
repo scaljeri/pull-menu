@@ -1,14 +1,29 @@
 /**
- * This plugin adds pull menus to a panel
+ *!
+ * PullMenu JavaScript Library v1.0
+ * https://github.com/scaljeri/pull-menu
  *
- * ## Example
+ * Copyright 2012, Lucas Calje
+ * 
+ * This library is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *  
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *  
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  *
+ * Date: Mon Jun 4 12:46:34 2012 +0100
  */
 
 Ext.define('Scaljeri.plugin.PullMenu', {
     extend:    'Ext.Component',
     alias:     'plugin.pullmenu',
-    requires: ['Ext.DateExtras'], // TODO: remove?!
 
     config: {
         /*
