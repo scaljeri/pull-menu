@@ -285,7 +285,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         		
        				fps = parseInt(1000/me.getFps()) ;
         			if ( !menu.isOpened && mngr.startPos <= 2*me.getDragBarWidth() ) {
-        				dragging = setInterval(function(){ me.updateMenu(cont,menu, me, key, options, mngr);}, fps) ;
+        				dragging = setInterval(function(){ me.updateMenu(cont,menu, me, options, mngr);}, fps) ;
         				menu.isDraggable = true ;
         				//Ext.Anim.run(cont, 'fade', { out: false, duration: 500, autoClear: false }) ;
         					
