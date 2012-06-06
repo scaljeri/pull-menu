@@ -4,7 +4,7 @@ Ext.define('GS.view.AttachedMenuView', {
 	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.AttachedMenuVertical', 'GS.view.AttachedMenuHorizontal', 'Ext.field.Checkbox'],
 	config: {
 		title: 'Pull to Refresh Demo',
-		cls: 'attached-menus',
+		//cls: 'attached-menus',
     	plugins: [
         	{
             	xclass: 'Scaljeri.plugin.PullMenu',
@@ -56,6 +56,7 @@ Ext.define('GS.view.AttachedMenuView', {
 			       		              name : 'vertical',
 			       		              value: 'vertical',
 			       		              label: 'Vertical',
+			       		              id: 'vertical',
 			       		              checked: true
 			       		          },
 			       		          {
@@ -63,6 +64,7 @@ Ext.define('GS.view.AttachedMenuView', {
 			       		              name : 'horizontal',
 			       		              value: 'horizontal',
 			       		              label: 'Horizontal',
+			       		              id: 'horizontal',
 			       		              checked: true
 			       		          },
 			       		          {

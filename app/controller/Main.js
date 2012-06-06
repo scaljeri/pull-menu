@@ -10,12 +10,6 @@ Ext.define('GS.controller.Main', {
         	attachedmenu: 'attachedmenus'
         },
         control: {
-            'presidentmenu': {
-                disclose: 'showDetail',
-                painted: function(){
-                	alert('x') ;
-                }
-            },
             '#applyTopMenuSettings': {
             	tap: function(){
             		var pmt = this.getTopmenu() ;
@@ -86,22 +80,23 @@ Ext.define('GS.controller.Main', {
             			scroll = 'none' ;
             		am.getScrollable().getScroller().setDirection(scroll) ;
             	}
+            },
+            '.checkboxfield': {
+            	check: function(e) {
+            		alert("CHECK") ;
+            	},
+            	tap: function(){
+            		alert("TAP") ;
+            	},
+            	painted: function(){alert('painted');}
+            },
+            'panel': {
+            	tap: function() {
+            		alert("Panel TAP") ;
+            	}
             }
-        	
         }
     },
     launch: function(){
-    	var me = this ;
-    	this.getTopmenu().element.on({
-    		tap: function(){
-    			console.log("CLICK " + this === me.getTopmenu()) ;
-    			//me.getTopmenu().getPlugins()[0].setAnimationMenuSpeed(10);
-    		}
-    	})
-    },
-    
-    showDetail: function(list, record) {
-    	Ext.Msg.alert('Title', 'The quick brown fox jumped over the lazy dog.', Ext.emptyFn);
     }
-
 });

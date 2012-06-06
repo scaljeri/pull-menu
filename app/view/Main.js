@@ -35,7 +35,7 @@ Ext.define("GS.view.Main", {
                     "The plugin is added to a component as follows:" + 
                     
                     
-                    '<!-- HTML generated using hilite.me --><div style="background: rgba(0,0,0,.5); overflow:auto;width:auto;color:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #d0d0d0">Ext.define(</span><span style="color: #ed9d13">&#39;GS.view.MyComponent&#39;</span><span style="color: #d0d0d0">,</span> <span style="color: #d0d0d0">{</span><br>' + 
+                    '<!-- HTML generated using hilite.me --><div style="word-wrap: break-word;background: rgba(0,0,0,.5); overflow:auto;width:auto;color:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #d0d0d0">Ext.define(</span><span style="color: #ed9d13">&#39;GS.view.MyComponent&#39;</span><span style="color: #d0d0d0">,</span> <span style="color: #d0d0d0">{</span><br>' + 
                 	'&nbsp;&nbsp;<span style="color: #d0d0d0">extend:</span> <span style="color: #ed9d13">&#39;Ext.Panel&#39;</span><span style="color: #d0d0d0">,</span><br> ' +
                 	'&nbsp;&nbsp;<span style="color: #d0d0d0">requires:</span> <span style="color: #d0d0d0">[</span><span style="color: #ed9d13">&#39;Scaljeri.plugin.PullMenu&#39;</span><span style="color: #d0d0d0">,</span><br> ' +
                 	'&nbsp;&nbsp;<span style="color: #d0d0d0">config:</span> <span style="color: #d0d0d0">{</span><br>' +
