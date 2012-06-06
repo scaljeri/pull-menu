@@ -15,7 +15,7 @@ Ext.define('GS.view.PullMenuTopView', {
                      						xclass: 'GS.view.MenuDrag', 
                      						mtype: 'slide',
                      						fill: true,
-                     						scrollable: 'vertical',
+                     						scrollable: 'vertical', 
                      						id: 'my-top-menu'
                      				 	}
                      		} 
@@ -33,10 +33,21 @@ Ext.define('GS.view.PullMenuTopView', {
     				backgroundPosition: 'center',
     				backgroundSize: '100% 100%'
    				},
-   				items:[{
+   				items:[
+   			   	   			/*	{
+   			   	   					xtype: 'button',
+   			   	   					cls: 'doc-button',
+   			   	   					listeners: {
+   			   	   						tap: function() {
+   			   	   							alert('x');
+    			   	   						}
+   			   	   					}
+   	   				}, */
+   	   				{
    					xtype: 'fieldset',
    					centered: true,
-   					title: 'Menu animation settings',
+   					title: 'Top-Menu animation settings',
+   					style: 'margin-top:50px;',
    					defaults: {
    						labelWidth:'200px'
    					},
@@ -74,11 +85,32 @@ Ext.define('GS.view.PullMenuTopView', {
 		               			value: 10,
 		               			cls: 'fps',
 		           			},
-		           			{
-		           				xtype: 'button',
-		           				text: 'apply settings',
-		           				id: 'applyTopMenuSettings'
-		           			}
+		       		        {
+		       		        	xtype: 'container',
+		       		        	layout: 'hbox',
+		       		        	items: [{
+		       		        		xtype: 'button',
+		       		        		cls: 'ok-button',
+		       		        		id: 'applyTopMenuSettings'
+		       		        		},
+		       		        		{
+		       		        			xtype: 'spacer'
+		       		        		},
+		       		        		{
+		       		        			html: 'saving...',
+		       		        			style: 'margin-top:8px;color:#FFFFFF',
+		       		        			cls: 'saving'
+		       		        		},
+		       		        		{
+		       		        			xtype: 'spacer'
+		       		        		},
+		       		        		{
+		       		        			xtype: 'button',
+		       		        			cls: 'doc-button'
+		       		        		}]
+		       		        }
+
+
 		       			]
    				}]
 			}]

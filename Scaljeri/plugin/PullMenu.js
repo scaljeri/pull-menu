@@ -51,22 +51,22 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * 		{ 	
          * 			top: 	{
          * 						xclass: 'GS.view.MenuDrag',  		// the menu class name
-         * 						mtype: 'slide',				 		// the menu type 
+         * 						mtype: 'pull',				 		// the menu type 
          * 						fill: false,				 		// fill entire parent component if true
-         * 						scrollable: 'vertical',		 		// make the menu content scrollable
+         * 						scrollable: 'vertical',		 		// make the menu content scrollable (NOTE: height of the menu is 0px!!)
          * 						id: '123'					 		// id of the menu
          * 				 	},
          * 			left: 	{
          * 						xclass: 'GS.view.MenuHorizontal',
-         * 						mtype: 'append'						
+         * 						mtype: 'drag-append'						
          * 					},
          * 			right: 	{
          * 						xclass: 'GS.view.MenuHorizontal',
-         * 						mtype: 	'overlay'
+         * 						mtype: 	'drag-overlay'
          * 					},
          * 			bottom: {
          * 						xclass: 'GS.view.MenuVertical',
-         * 						mtype: 	'slide',
+         * 						mtype: 	'pull',
          * 						fill: true
          * 					}
          * 		} 
@@ -98,11 +98,11 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         this.callParent();
         
         // private variables
-        this.parent = null ; 				// the component to which this plugin is attached
+        this.parent = null ; 					// the component to which this plugin is attached
     	this.scrollPosition = null ;			// the scroll x and y position:  { x: val1, y: val2 }
     	this.prevPosition = { x: 0, y: 0 } ;
         this.mdim = { top: 0, bottom: 0, left: 0, right: 0 } ; // menu dimensions
-    	this.menuVisible = null ;  			// contains: null, top, bottom, left or right
+    	this.menuVisible = null ;  				// contains: null, top, bottom, left or right
     },
 
     init: function(container) {
@@ -114,32 +114,27 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         
         // fix input and create the menu objects
     	if ( typeof(me.getItems()) != 'object') { // only a string given == xclass for the top menu
-    		var item = { top: me.getItems(), mtype: this.isScrollable('top') ? 'overlay' : 'grow' } ;
-    		if ( item.mtype == 'grow')
-    			item.fill = true ;
+    		var item = { top: me.getItems(), mtype: this.isScrollable('top') ? 'drag-append' : 'pull' } ;
     		this.setItems(item) ;
     	}
     	
     	var items = me.getItems() ;
-    	this.menus = {} ;
     	for( var k in items ) {
     		if ( typeof(items[k]) == 'string') {
-    			items[k] = { xclass: items[k], mtype: this.isScrollable(k) ? 'overlay' : 'grow'  } ;
-    			if ( items[k].mtype == 'grow' )
-    				items[k].fill = true ;
+    			items[k] = { xclass: items[k], mtype: this.isScrollable(k) ? 'drag-append' : 'pull'  } ;
     		}
     		// merge with other defaults
     		items[k] = Ext.Object.merge({}, { fill: true }, items[k] ) ;
     		(function(key){ // closure stuff (use 'me' instead of this)
-    			me.menus[key] = me[ me.isScrollable(key) ? 'createScrollableMenu':'createPullMenu'](key, me.getItems()[key]) ;
-    			me.menus[key].on({
+    			items[key].instance = me[ me.isScrollable(key) ? 'createScrollableMenu':'createPullMenu'](key, me.getItems()[key]) ;
+    			items[key].instance.on({
     	  			painted: function(){ // when painted the sizes of the menu is known
     	  						var xy = key == 'top' || key == 'bottom' ? 'getHeight' : 'getWidth' ;
-    	   						//me.mdim[key] = this.getItems().items[0].element[xy]() +  this.getItems().items[2].element[xy]() ;
+    	  						console.log("Hmmm "+key + " --> " + this.element[xy]()) ;
     	   						me.mdim[key] = this.element[xy]() ;
     	   					},
     	   					single: true,
-    	   					scope: me.menus[key]
+    	   					scope: items[key].instance
     	   				}) ;
     		})(k) ;
     	}
@@ -170,13 +165,13 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     createPullMenu: function(key, options){
     	// configure container element
     	var containerConfig = {
-    		xtype: 'panel',
-    		layout: key == 'top' || key == 'bottom' ? 'vbox' : 'hbox',
-       		cls: 'pullmenu' +  (options.cls ? ' ' + options.cls : ''),
-       		style: 'overflow:hidden;',
-       		zIndex: 100,
+    		xtype:  'panel',
+    		layout:  key == 'top' || key == 'bottom' ? 'vbox' : 'hbox',
+       		cls:     'pullmenu' +  (options.cls ? ' ' + options.cls : ''),
+       		style:   'overflow:hidden;',
+       		zIndex:  100,
        		padding: 0,
-       		id: options.id||null
+       		id:      options.id||null
     	} ;
     	if ( options.scrollable )
     		containerConfig.scrollable = options.scrollable ;
@@ -186,10 +181,10 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     	
     	// configure the dragbar 
     	var dragBarConfig = { 
-       			xtype: 'panel',
+       			xtype:  'panel',
        			layout: 'vbox',
-       			style: 'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
-       			items: [{
+       			style:  'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
+       			items:  [{
        				xtype: 'panel',
        				centered:true,
        				html: key == 'top' || key == 'bottom' ? 
@@ -201,12 +196,12 @@ Ext.define('Scaljeri.plugin.PullMenu', {
        			],
    				docked: this.getOppositeKey(key)
        		};
-    	dragBarConfig[this.getAnimationProperty(key)] = this.getDragBarWidth() ;
+    	dragBarConfig[this.getAnimationProperty(key)] = this.getDragBarWidth() ; // width or height of the drag-bar
     	
     	if ( key == 'top' || key == 'left') 
-    		containerConfig.items = [ { xclass: options.xclass }, /*{ xtype: 'spacer' },*/ dragBarConfig ] ;
+    		containerConfig.items = [ { xclass: options.xclass }, dragBarConfig ] ;
     	else 
-    		containerConfig.items = [ dragBarConfig, /*{ xtype: 'spacer' },*/ { xclass: options.xclass }  ] ;
+    		containerConfig.items = [ dragBarConfig, { xclass: options.xclass }  ] ;
     		
        	var cont = Ext.create( 'Ext.Panel', containerConfig ) ;
     	this.parent.insert(0, cont) ;
@@ -239,7 +234,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         		}
         	},
         	drag: function(e, node) {
-        		mngr.event = e ;
+        		mngr.event = e ; // used in the 'updateMenu' only at certain intervals
         	},
         	dragend: function(e, node) {
         		if ( !menu.isAnimating && menu.isDraggable ) {
@@ -277,6 +272,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         	touchstart: function(e, node) { 
        			mngr.event = null ;
        			clearInterval(dragging) ;
+       			console.dir(me.mdim) ;
         		if ( !menu.isAnimating ) {
         			// initialze
         			menu.parentSize =  me.parent.element[ menu.move == 'height' ? 'getHeight':'getWidth']() ;
@@ -475,9 +471,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     showHideMenu: function(key, hide) {
     	var mainAxis  = (key == 'top' || key == 'bottom' ? 'y' : 'x') ;
     	
-    	if ( this.getItems()[key].mtype == 'overlay' ) {
+    	if ( this.getItems()[key].mtype == 'drag-overlay' ) {
     		var config = {
-    				element: this.menus[key].element,
+    				element: this.getItems()[key].instance.element,
         		    duration: 150,
         		    easing: 'ease-in',
         		    preserveEndState: true,
@@ -507,7 +503,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     },
 
     hideMenu: function(key) {
-    	if ( this.getItems()[key].mtype == 'slide') {
+    	if ( this.getItems()[key].mtype == 'pull') {
     		// TODO
     	}
     	else {

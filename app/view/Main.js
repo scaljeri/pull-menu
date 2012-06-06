@@ -30,7 +30,7 @@ Ext.define("GS.view.Main", {
                     "There are two types of menus:<br>" + 
                     "<ul>" +
                        "<li><div style='display:inline-block;width:130px'>Pull menus</div>- A menu which can be dragged from the attached side into the component area</li>" + 
-                       "<li><div style='display:inline-block;width:130px'>Attached menus</div>- A menu which is shown when the component itself is scrolled</li>" + 
+                       "<li><div style='display:inline-block;width:130px'>Attached menus</div>- A menu which is shown when the component itself is scrolled/dragged horizontally or vertically</li>" + 
                     "</ul><br><br>" + 
                     "The plugin is added to a component as follows:" + 
                     
@@ -55,7 +55,6 @@ Ext.define("GS.view.Main", {
                 title: 'Pull Top',
                 iconCls: 'action',
                 xtype: 'pullmenutop',
-                id: 'pull-top-demp'
             },	
             {
                 title: 'Pull Left',

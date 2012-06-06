@@ -1,3 +1,5 @@
+(function(){
+	
 Ext.define('GS.controller.Main', {
     extend: 'Ext.app.Controller',
 
@@ -12,19 +14,8 @@ Ext.define('GS.controller.Main', {
         control: {
             '#applyTopMenuSettings': {
             	tap: function(){
-            		var pmt = this.getTopmenu() ;
-            		var fillspeed = pmt.element.query('.fillspeed input')[0].value ;
-            		var menuspeed = pmt.element.query('.menuspeed input')[0].value ;
-            		var delay     = pmt.element.query('.delay input')[0].value ;
-            		var fps     = pmt.element.query('.fps input')[0].value ;
-            		//pmt.plugins
-            		for( index in pmt.getPlugins() ) {
-            			var menu = pmt.getPlugins()[index] ;
-            			menu.setAnimationFillSpeed(fillspeed) ;
-            			menu.setAnimationMenuSpeed(menuspeed) ;
-            			menu.setDelayHide(delay) ;
-            			menu.setFps(fps) ;
-            		}
+            		setPullMenuSettings(this.getTopmenu()) ;
+            		animateSaving('#topdragmenu') ;
             	}
             },
             '#applyLeftMenuSettings': {
@@ -81,18 +72,9 @@ Ext.define('GS.controller.Main', {
             		am.getScrollable().getScroller().setDirection(scroll) ;
             	}
             },
-            '.checkboxfield': {
-            	check: function(e) {
-            		alert("CHECK") ;
-            	},
+            'div[data-info=doc]': {
             	tap: function(){
-            		alert("TAP") ;
-            	},
-            	painted: function(){alert('painted');}
-            },
-            'panel': {
-            	tap: function() {
-            		alert("Panel TAP") ;
+            		alert("YES") ;
             	}
             }
         }
@@ -100,3 +82,44 @@ Ext.define('GS.controller.Main', {
     launch: function(){
     }
 });
+
+function animateSaving(parentId) {
+	Ext.Animator.run({
+		element: Ext.query('#topdragmenu .saving')[0],
+    	duration: 200,
+    	easing: 'linear',
+    	preserveEndState: true,
+    	onEnd: function(){ 
+    		setTimeout(function(){
+    		Ext.Animator.run({
+					element: Ext.query('#topdragmenu .saving')[0],
+    		    	duration: 200,
+    		    	easing: 'linear',
+    		    	preserveEndState: true,
+    		    	from: { color: '#000000'},
+    		    	to: { color: '#FFFFFF'}
+			}) ;
+    		},200) ;
+    	},
+    	from: { color: '#FFFFFF'},
+    	to: { color: '#000000'}
+	}) ;
+}
+
+function setPullMenuSettings(parent) {
+		var fillspeed = parent.element.query('.fillspeed input')[0].value ;
+		var menuspeed = parent.element.query('.menuspeed input')[0].value ;
+		var delay     = parent.element.query('.delay input')[0].value ;
+		var fps       = parent.element.query('.fps input')[0].value ;
+		
+		for( index in parent.getPlugins() ) {
+			var menu = parent.getPlugins()[index] ;
+			menu.setAnimationFillSpeed(fillspeed) ;
+		console.log("Hmmm " + menuspeed) ;
+			menu.setAnimationMenuSpeed(menuspeed) ;
+			menu.setDelayHide(delay) ;
+			menu.setFps(fps) ;
+		}
+}
+
+})() ;
