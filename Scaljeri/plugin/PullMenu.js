@@ -93,15 +93,16 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 		pullMenuStyle: {}
         
     },
-    
-    parent: null, 			// the component to which this plugin is attached
-    scrollPosition: null,	// the scroll x and y position:  { x: val1, y: val2 }
-    prevPosition: { x: 0, y: 0 },
-    mdim: { top: 0, bottom: 0, left: 0, right: 0 }, // menu dimensions
-    menuVisible: null,  // contains: null, top, bottom, left or right
 
     initialize: function() {
         this.callParent();
+        
+        // private variables
+        this.parent = null ; 				// the component to which this plugin is attached
+    	this.scrollPosition = null ;			// the scroll x and y position:  { x: val1, y: val2 }
+    	this.prevPosition = { x: 0, y: 0 } ;
+        this.mdim = { top: 0, bottom: 0, left: 0, right: 0 } ; // menu dimensions
+    	this.menuVisible = null ;  			// contains: null, top, bottom, left or right
     },
 
     init: function(container) {
@@ -216,7 +217,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     attachPullMenuListeners: function(cont, key, options) {
     	var me = this ;
     	var menu  = { isAnimating: false, isOpened: false, isDraggable: false, move: this.getAnimationProperty(key), parentSize: null } ;
-    	var mngr  = { startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', event: null, lastUpdated: new Date().getTime() } ;
+    	var mngr  = { key: key, startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', event: null, lastUpdated: new Date().getTime() } ;
     	var fps = 0 ;
     	
     	var lastUpdated = new Date().getTime() ;
@@ -244,6 +245,11 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         		if ( !menu.isAnimating && menu.isDraggable ) {
         			clearInterval(dragging) ;
         			position = me.getRelativeCoord( key, e[mngr.pageXY], menu.parentSize ) ;
+        			
+        			if ( position > me.mdim[key]) { // make sure the menu is correctly positioned
+        				cont.element.dom.style[key] = '' ; 
+        				cont.element.dom.style[key] = '0px' ; 
+        			}
         			
    					menu.isOpened = true ;
         			if ( (new Date().getTime() - mngr.startTime) < 1000 && Math.abs(mngr.startPos - e[mngr.pageXY]) > 50 ) { // swipe
@@ -294,11 +300,11 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         			else if ( menu.isOpened ) {
         				if ( options.fill == true && mngr.startPos > menu.parentSize - me.getDragBarWidth() )  {
         					menu.isDraggable = true ;
-        					dragging = setInterval(function(){ me.updateMenu(cont,menu, me, key, options, mngr);}, fps) ;
+        					dragging = setInterval(function(){ me.updateMenu(cont,menu, me, options, mngr);}, fps) ;
         				}
         				else if ( options.fill == false && mngr.startPos >= me.mdim[key] - me.getDragBarWidth() && mngr.startPos <= me.mdim[key] ){
         					menu.isDraggable = true ;
-        					dragging = setInterval(function(){ me.updateMenu(cont,menu, me, key, options, mngr);}, fps) ;
+        					dragging = setInterval(function(){ me.updateMenu(cont,menu, me, options, mngr);}, fps) ;
         				}
         			}
         		}
@@ -314,28 +320,28 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 //    	});
     },
     
-    updateMenu: function(cont, menu, me, key, options, mngr) {
+    updateMenu: function(cont, menu, me, options, mngr) {
   		if ( !menu.isAnimating && menu.isDraggable && mngr.event != null && new Date().getTime() - mngr.lastUpdated > 10 ) {
-  			var position = me.getRelativeCoord(key, mngr.event[mngr.pageXY], menu.parentSize ) ;
-			if ( options.fill == true || position < me.mdim[key]){
-				if ( position - me.mdim[key] >= 0  ) {  
-					cont.element.dom.style[key] = '' ;
-					cont.element.setStyle(key, '0px') ;
+  			var position = me.getRelativeCoord(mngr.key, mngr.event[mngr.pageXY], menu.parentSize ) ;
+			if ( options.fill == true || position < me.mdim[mngr.key]){
+				if ( position - me.mdim[mngr.key] >= 0  ) {  
+					cont.element.dom.style[mngr.key] = '' ;
+					cont.element.setStyle(mngr.key, '0px') ;
 					
 						cont.element.dom.style[menu.move] = '' ;
 					cont.element.dom.style[menu.move] = (position <= menu.parentSize ? position:menu.parentSize) + 'px' ;
 				}
 				else {
 					cont.element.dom.style[menu.move] = '' ;
-					cont.element.dom.style[menu.move] = me.mdim[key] + 'px' ;
+					cont.element.dom.style[menu.move] = me.mdim[mngr.key] + 'px' ;
     				
-					cont.element.dom.style[key] = '' ;
-					cont.element.setStyle(key, (position - me.mdim[key]) + 'px') ;
+					cont.element.dom.style[mngr.key] = '' ;
+					cont.element.setStyle(mngr.key, (position - me.mdim[mngr.key]) + 'px') ;
 				}
 			}
 			else {
-				cont.element.dom.style[key] = '' ;
-				cont.element.setStyle(key, '0px') ;
+				cont.element.dom.style[mngr.key] = '' ;
+				cont.element.setStyle(mngr.key, '0px') ;
 			}
 			menu.lastUpdated = new Date().getTime() ;
 		}
