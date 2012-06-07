@@ -115,7 +115,6 @@ function setPullMenuSettings(parent) {
 		for( index in parent.getPlugins() ) {
 			var menu = parent.getPlugins()[index] ;
 			menu.setAnimationFillSpeed(fillspeed) ;
-		console.log("Hmmm " + menuspeed) ;
 			menu.setAnimationMenuSpeed(menuspeed) ;
 			menu.setDelayHide(delay) ;
 			menu.setFps(fps) ;
