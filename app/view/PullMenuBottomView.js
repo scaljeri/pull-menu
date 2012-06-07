@@ -8,37 +8,18 @@ Ext.define('GS.view.PullMenuBottomView', {
     	plugins: [
         	{
             	xclass: 'Scaljeri.plugin.PullMenu',
-            	pullRefreshText: 'Pull down for more new Tweets!',
             	items: 
             			{ 	
-                     			/*top: 	{
-                     						xclass: 'GS.view.MenuDrag', 
-                     						mtype: 'slide',
-                     						fill: true 
-                     				 	},*/
                      			bottom: 	{
                      						xclass: 'GS.view.MenuBottom', 
-                     						mtype: 'slide',
+                     						mtype: 'pull',
                      						fill: false 
-                     				 	}/*,
-                     			left: 	{
-                     						xclass: 'GS.view.MenuVertical',
-                     						mtype: 'overlay'
-                     					},
-                     			right: 	{
-                     						xclass: 'GS.view.MenuVertical',
-                     						mtype: 	'append'
-                     					},
-                     			bottom: {
-                     						xclass: 'GS.view.MenuHorizontal',
-                     						mtype: 	'append',//'slide',
-                     						fill: true
-                     					}*/
+                     				 	}
                      		} 
         	}
     	],
 		 scrollable: {
-		        direction: 'none'//'vertical' // 'both'
+		        direction: 'none'
 		    },
     	 items: [{
     	 		xtype: 'panel',
@@ -52,7 +33,7 @@ Ext.define('GS.view.PullMenuBottomView', {
    				items:[{
    					xtype: 'fieldset',
    					centered: true,
-   					title: 'Menu animation settings',
+   					title: 'Bottom-Menu animation settings',
    					defaults: {
    						labelWidth:'200px'
    					},
@@ -84,10 +65,16 @@ Ext.define('GS.view.PullMenuBottomView', {
 		               			cls: 'delay',
 		           			},
 		           			{
-		           				xtype: 'button',
-		           				text: 'apply settings',
-		           				id: 'applyBottomMenuSettings'
-		           			}
+		               			xtype: 'textfield',
+		               			name : 'fps',
+		               			label: 'FPS',
+		               			value: 10,
+		               			cls: 'fps',
+		           			},
+		       		        {
+		       		        	xtype: 'formbuttons',
+		       		        	description: 'bottommenu'
+		       		        }
 		       			]
    				}]
 			}]

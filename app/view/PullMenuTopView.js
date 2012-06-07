@@ -33,17 +33,7 @@ Ext.define('GS.view.PullMenuTopView', {
     				backgroundPosition: 'center',
     				backgroundSize: '100% 100%'
    				},
-   				items:[
-   			   	   			/*	{
-   			   	   					xtype: 'button',
-   			   	   					cls: 'doc-button',
-   			   	   					listeners: {
-   			   	   						tap: function() {
-   			   	   							alert('x');
-    			   	   						}
-   			   	   					}
-   	   				}, */
-   	   				{
+   				items:[{
    					xtype: 'fieldset',
    					centered: true,
    					title: 'Top-Menu animation settings',
@@ -86,31 +76,9 @@ Ext.define('GS.view.PullMenuTopView', {
 		               			cls: 'fps',
 		           			},
 		       		        {
-		       		        	xtype: 'container',
-		       		        	layout: 'hbox',
-		       		        	items: [{
-		       		        		xtype: 'button',
-		       		        		cls: 'ok-button',
-		       		        		id: 'applyTopMenuSettings'
-		       		        		},
-		       		        		{
-		       		        			xtype: 'spacer'
-		       		        		},
-		       		        		{
-		       		        			html: 'saving...',
-		       		        			style: 'margin-top:8px;color:#FFFFFF',
-		       		        			cls: 'saving'
-		       		        		},
-		       		        		{
-		       		        			xtype: 'spacer'
-		       		        		},
-		       		        		{
-		       		        			xtype: 'button',
-		       		        			cls: 'doc-button'
-		       		        		}]
+		       		        	xtype: 'formbuttons',
+		       		        	description: 'topmenu'
 		       		        }
-
-
 		       			]
    				}]
 			}]

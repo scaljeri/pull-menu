@@ -11,7 +11,7 @@ Ext.define('GS.view.PullMenuLeftView', {
             	items: { 	
                     		left: 	{
                     					xclass: 'GS.view.MenuVertical', 
-                    					mtype: 'slide',
+                    					mtype: 'pull',
                     					fill: true,
                      		} 
             	}
@@ -33,7 +33,7 @@ Ext.define('GS.view.PullMenuLeftView', {
 	   				items:[{
 	   					xtype: 'fieldset',
 	   					centered: true,
-	   					title: 'Menu animation settings',
+	   					title: 'Left-Menu animation settings',
 	   					defaults: {
 	   						labelWidth:'200px'
 	   					},
@@ -71,11 +71,10 @@ Ext.define('GS.view.PullMenuLeftView', {
 			               			value: 10,
 			               			cls: 'fps',
 			           			},
-			           			{
-			           				xtype: 'button',
-			           				text: 'apply settings',
-			           				id: 'applyLeftMenuSettings'
-			           			}
+			       		        {
+			       		        	xtype: 'formbuttons',
+			       		        	description: 'leftmenu'
+			       		        }
 			       			]
 	   				}]
 				}]

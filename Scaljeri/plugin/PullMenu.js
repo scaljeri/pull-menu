@@ -130,7 +130,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     			items[key].instance.on({
     	  			painted: function(){ // when painted the sizes of the menu is known
     	  						var xy = key == 'top' || key == 'bottom' ? 'getHeight' : 'getWidth' ;
-    	  						console.log("Hmmm "+key + " --> " + this.element[xy]()) ;
     	   						me.mdim[key] = this.element[xy]() ;
     	   					},
     	   					single: true,
@@ -272,7 +271,6 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         	touchstart: function(e, node) { 
        			mngr.event = null ;
        			clearInterval(dragging) ;
-       			console.dir(me.mdim) ;
         		if ( !menu.isAnimating ) {
         			// initialze
         			menu.parentSize =  me.parent.element[ menu.move == 'height' ? 'getHeight':'getWidth']() ;

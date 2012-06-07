@@ -15,7 +15,17 @@ Ext.application({
     ],
 
     controllers: ['Main'],
-    views: ['Main', 'PullMenuTopView', 'PullMenuLeftView', 'PullMenuTopView', 'MenuVertical', 'MenuDrag', 'MenuBottom', 'AttachedMenuView'],
+    views: ['Main', 
+            'Demo',
+            'Documentation',
+            'FormButtons',
+            'PullMenuTopView', 
+            'PullMenuLeftView', 
+            'PullMenuTopView', 
+            'MenuVertical', 
+            'MenuDrag', 
+            'MenuBottom', 
+            'AttachedMenuView'],
     modesl: ['Presidents'],
     stores: ['Presidents'],
 
@@ -36,7 +46,7 @@ Ext.application({
     launch: function() {
         // Destroy the #appLoadingIndicator element
         Ext.fly('appLoadingIndicator').destroy();
-
+        
         // Initialize the main view
         Ext.Viewport.add(Ext.create('GS.view.Main'));
     },

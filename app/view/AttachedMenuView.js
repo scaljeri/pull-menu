@@ -2,6 +2,7 @@ Ext.define('GS.view.AttachedMenuView', {
 	extend: 'Ext.Panel', 
 	xtype: 'attachedmenus',
 	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.AttachedMenuVertical', 'GS.view.AttachedMenuHorizontal', 'Ext.field.Checkbox'],
+	id: 'attachmenus',
 	config: {
 		title: 'Pull to Refresh Demo',
 		//cls: 'attached-menus',
@@ -12,19 +13,19 @@ Ext.define('GS.view.AttachedMenuView', {
             			{ 	
                      			top: 	{
                      						xclass: 'GS.view.AttachedMenuHorizontal', 
-                     						mtype: 'append'
+                     						mtype: 'drag-append'
                      				 	},
                      			bottom: 	{
                      						xclass: 'GS.view.AttachedMenuHorizontal',
-                     						mtype: 	'append'
+                     						mtype: 	'drag-append'
                      					},
                      			left: 	{
                      						xclass: 'GS.view.AttachedMenuVertical',
-                     						mtype: 	'overlay'
+                     						mtype: 	'drag-overlay'
                      					},
                      			right: 	{
                      						xclass: 'GS.view.AttachedMenuVertical',
-                     						mtype: 	'overlay'
+                     						mtype: 	'drag-overlay'
                      					}
                      		} 
         	}
@@ -67,11 +68,10 @@ Ext.define('GS.view.AttachedMenuView', {
 			       		              id: 'horizontal',
 			       		              checked: true
 			       		          },
-			       		          {
-				           				xtype: 'button',
-				           				text: 'apply settings',
-				           				id: 'applyAttachedMenuSettings'
-				           			}
+				       		      {
+				       		          xtype: 'formbuttons',
+				       		          description: 'appendmenu'
+				       		      }
 			       			]
 	   				}]
 				}]

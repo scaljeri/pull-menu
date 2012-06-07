@@ -27,7 +27,7 @@
     		background-size: 100% 100% ;
     		width: 30px ;
     		height: 30px ;
-    		margin: 5px 5px 0 20px;
+    		margin: 5px 20px 0 20px;
     	}
     	.ok-button {
     		background-image: url(resources/images/ok.png)!important;
@@ -39,6 +39,17 @@
     	}
     	.saving {
     		margin-top: 8px; 
+    	}
+    	#doc-content {
+    		font-size: 15px ;
+    	}
+    	.doc-opt-label {
+    		display: inline-block;
+    		width: 100px ;
+    	}
+    	.doc-opt-expl {
+    		display: inline-block ;
+    		width: 100% ;
     	}
         /**
          * Example of an initial loading indicator.
@@ -109,5 +120,111 @@
         <div></div>
         <div></div>
     </div>
+    
+    <div id="topmenu-documentation" class="x-hidden-display" style="color:white">
+    <div style="font-size:20px">Example configuration:</div>
+<!-- HTML generated using hilite.me --><div style="background: #eeeedd; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins: [
+{
+  xclass: <span style="color: #CD5555">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
+  items: {
+    top: {
+      xclass: <span style="color: #CD5555">&#39;GS.view.MenuDrag&#39;</span>, 
+      mtype: <span style="color: #CD5555">&#39;pull&#39;</span>,
+      fill: <span style="color: #8B008B; font-weight: bold">true</span>,
+      scrollable: <span style="color: #CD5555">&#39;vertical&#39;</span>, 
+      id: <span style="color: #CD5555">&#39;my-top-menu&#39;</span>
+    }
+  }
+}],
+</pre></div>
+	 <div style="font-size:20px">configuration options explained:</div>
+	<ol style="margin-left:15px">
+		<li><div class="doc-opt-label">xclass</div>- Class name of the menu component <li>
+		<li><div class="doc-opt-label">mtype</div>-  The menu type<li>
+		<li><div class="doc-opt-label">fill</div>- 	 Fill the whole (parent) component (if the menu itself doesn't do so!)<li>
+		<li><div class="doc-opt-label">scrollable</div>-  make the menu scrollable<li>
+		<li><div class="doc-opt-label">id</div>- id of the menu component<li>
+	</ul>
+    
+    </div>
+
+    <div id="leftmenu-documentation" class="x-hidden-display" style="color:white">
+    <div style="font-size:20px">Example configuration:</div>
+<!-- HTML generated using hilite.me --><div style="background: #eeeedd; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins: [
+{
+  xclass: <span style="color: #CD5555">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
+  items: {
+    top: {
+      xclass: <span style="color: #CD5555">&#39;GS.view.MenuVertical&#39;</span>, 
+      mtype: <span style="color: #CD5555">&#39;pull&#39;</span>,
+      fill: <span style="color: #8B008B; font-weight: bold">true</span>,
+    }
+  }
+}],
+</pre></div>
+	 <div style="font-size:20px">configuration options explained:</div>
+	<ol style="margin-left:15px">
+		<li><div class="doc-opt-label">xclass</div>- Class name of the menu component <li>
+		<li><div class="doc-opt-label">mtype</div>-  The menu type<li>
+		<li><div class="doc-opt-label">fill</div>- 	 Fill the whole (parent) component (if the menu itself doesn't do so!)<li>
+	</ul>
+    
+    </div>
+    
+    <div id="bottommenu-documentation" class="x-hidden-display" style="color:white">
+    <div style="font-size:20px">Example configuration:</div>
+    <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins<span style="font-weight: bold">:</span> [{
+  xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
+  items<span style="font-weight: bold">:</span> 
+  { 	
+    bottom<span style="font-weight: bold">:</span> 	{
+      xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;GS.view.MenuBottom&#39;</span>, 
+      mtype<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;pull&#39;</span>,
+      fill<span style="font-weight: bold">:</span> <span style="font-weight: bold">false</span> 
+    }
+  } 
+}],
+</pre></div>
+ <div style="font-size:20px">configuration options explained:</div>
+	<ol style="margin-left:15px">
+		<li><div class="doc-opt-label">xclass</div>- Class name of the menu component <li>
+		<li><div class="doc-opt-label">mtype</div>-  The menu type<li>
+		<li><div class="doc-opt-label">fill</div>- 	 Fill the whole (parent) component (if the menu itself doesn't do so!)<li>
+	</ul>
+    
+    </div>
+   </div> 
+    <div id="appendmenu-documentation" class="x-hidden-display" style="color:white">
+    <div style="font-size:20px">Example configuration:</div>
+    <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins<span style="font-weight: bold">:</span> [{
+  xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
+  items<span style="font-weight: bold">:</span> { 	
+    top<span style="font-weight: bold">:</span> {
+      xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;GS.view.AttachedMenuHorizontal&#39;</span>, 
+      mtype<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;drag-append&#39;</span>
+    },
+    bottom<span style="font-weight: bold">:</span> {
+      xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;GS.view.AttachedMenuHorizontal&#39;</span>,
+      mtype<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;drag-append&#39;</span>
+    },
+    left<span style="font-weight: bold">:</span> {
+      xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;GS.view.AttachedMenuVertical&#39;</span>,
+      mtype<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;drag-overlay&#39;</span>
+    },
+    right<span style="font-weight: bold">:</span> {
+      xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;GS.view.AttachedMenuVertical&#39;</span>,
+      mtype<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;drag-overlay&#39;</span>
+    }	
+  } 
+}],
+</pre></div>
+ <div style="font-size:20px">configuration options explained:</div>
+ <ol style="margin-left:15px">
+		<li><div class="doc-opt-label">xclass</div>- Class name of the menu component <li>
+		<li><div class="doc-opt-label">mtype</div>-  The menu type: append or append-overlay<li>
+ </ul>
+    
+    
+
 </body>
 </html>
