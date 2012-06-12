@@ -2,7 +2,7 @@
     /**
      * The application's namespace, used by Sencha Command to generate classes
      */
-    "name": "GS",
+    "name": "PullMenu",
 
     /**
      * List of all JavaScript assets in the right execution order.

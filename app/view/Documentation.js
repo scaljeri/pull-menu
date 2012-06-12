@@ -1,4 +1,4 @@
-Ext.define("GS.view.Documentation", {
+Ext.define("PullMenu.view.Documentation", {
     extend: 'Ext.Panel',
     xtype: 'documentation',
     

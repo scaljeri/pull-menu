@@ -50,22 +50,22 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * items: 
          * 		{ 	
          * 			top: 	{
-         * 						xclass: 'GS.view.MenuDrag',  		// the menu class name
+         * 						xclass: 'PullMenu.view.MenuDrag',  		// the menu class name
          * 						mtype: 'pull',				 		// the menu type 
          * 						fill: false,				 		// fill entire parent component if true
          * 						scrollable: 'vertical',		 		// make the menu content scrollable (NOTE: height of the menu is 0px!!)
          * 						id: '123'					 		// id of the menu
          * 				 	},
          * 			left: 	{
-         * 						xclass: 'GS.view.MenuHorizontal',
+         * 						xclass: 'PullMenu.view.MenuHorizontal',
          * 						mtype: 'drag-append'						
          * 					},
          * 			right: 	{
-         * 						xclass: 'GS.view.MenuHorizontal',
+         * 						xclass: 'PullMenu.view.MenuHorizontal',
          * 						mtype: 	'drag-overlay'
          * 					},
          * 			bottom: {
-         * 						xclass: 'GS.view.MenuVertical',
+         * 						xclass: 'PullMenu.view.MenuVertical',
          * 						mtype: 	'pull',
          * 						fill: true
          * 					}

@@ -1,7 +1,7 @@
-Ext.define('GS.view.PullMenuLeftView', {
+Ext.define('PullMenu.view.PullMenuLeftView', {
 	extend: 'Ext.Panel', 
 	xtype: 'pullmenuleft',
-	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuVertical'],
+	requires: ['Scaljeri.plugin.PullMenu', 'PullMenu.view.MenuVertical'],
 	config: {
 		title: 'Pull to Refresh Demo',
     	plugins: [
@@ -10,7 +10,7 @@ Ext.define('GS.view.PullMenuLeftView', {
             	pullRefreshText: 'Pull down for more new Tweets!',
             	items: { 	
                     		left: 	{
-                    					xclass: 'GS.view.MenuVertical', 
+                    					xclass: 'PullMenu.view.MenuVertical', 
                     					mtype: 'pull',
                     					fill: true,
                      		} 

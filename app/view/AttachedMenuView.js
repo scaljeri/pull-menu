@@ -1,7 +1,7 @@
-Ext.define('GS.view.AttachedMenuView', {
+Ext.define('PullMenu.view.AttachedMenuView', {
 	extend: 'Ext.Panel', 
 	xtype: 'attachedmenus',
-	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.AttachedMenuVertical', 'GS.view.AttachedMenuHorizontal', 'Ext.field.Checkbox'],
+	requires: ['Scaljeri.plugin.PullMenu', 'PullMenu.view.AttachedMenuVertical', 'PullMenu.view.AttachedMenuHorizontal', 'Ext.field.Checkbox'],
 	id: 'attachmenus',
 	config: {
 		title: 'Pull to Refresh Demo',
@@ -12,19 +12,19 @@ Ext.define('GS.view.AttachedMenuView', {
             	items: 
             			{ 	
                      			top: 	{
-                     						xclass: 'GS.view.AttachedMenuHorizontal', 
+                     						xclass: 'PullMenu.view.AttachedMenuHorizontal', 
                      						mtype: 'drag-append'
                      				 	},
                      			bottom: 	{
-                     						xclass: 'GS.view.AttachedMenuHorizontal',
+                     						xclass: 'PullMenu.view.AttachedMenuHorizontal',
                      						mtype: 	'drag-append'
                      					},
                      			left: 	{
-                     						xclass: 'GS.view.AttachedMenuVertical',
+                     						xclass: 'PullMenu.view.AttachedMenuVertical',
                      						mtype: 	'drag-overlay'
                      					},
                      			right: 	{
-                     						xclass: 'GS.view.AttachedMenuVertical',
+                     						xclass: 'PullMenu.view.AttachedMenuVertical',
                      						mtype: 	'drag-overlay'
                      					}
                      		} 

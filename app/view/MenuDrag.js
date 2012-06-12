@@ -1,4 +1,4 @@
-Ext.define('GS.view.MenuDrag', {
+Ext.define('PullMenu.view.MenuDrag', {
 	extend: 'Ext.Panel', 
 	xtype: 'menudrag',
 	config: {

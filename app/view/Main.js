@@ -1,4 +1,4 @@
-Ext.define("GS.view.Main", {
+Ext.define("PullMenu.view.Main", {
     extend: 'Ext.Panel',
     xtype: 'main',
     
@@ -11,7 +11,7 @@ Ext.define("GS.view.Main", {
             }
         },
     	items: [{
-    		xclass: 'GS.view.Demo'
+    		xclass: 'PullMenu.view.Demo'
     	}, {
     		xtype: 'documentation'
     	}]

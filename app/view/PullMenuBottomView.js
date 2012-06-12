@@ -1,7 +1,7 @@
-Ext.define('GS.view.PullMenuBottomView', {
+Ext.define('PullMenu.view.PullMenuBottomView', {
 	extend: 'Ext.Panel', 
 	xtype: 'pullmenubottom',
-	requires: ['Scaljeri.plugin.PullMenu', 'GS.view.MenuBottom'],
+	requires: ['Scaljeri.plugin.PullMenu', 'PullMenu.view.MenuBottom'],
 	config: {
 		title: 'Pull to Refresh Demo',
 		layout: 'hbox',
@@ -11,7 +11,7 @@ Ext.define('GS.view.PullMenuBottomView', {
             	items: 
             			{ 	
                      			bottom: 	{
-                     						xclass: 'GS.view.MenuBottom', 
+                     						xclass: 'PullMenu.view.MenuBottom', 
                      						mtype: 'pull',
                      						fill: false 
                      				 	}

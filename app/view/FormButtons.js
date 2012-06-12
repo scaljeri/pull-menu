@@ -1,4 +1,4 @@
-Ext.define('GS.view.FormButtons', {
+Ext.define('PullMenu.view.FormButtons', {
 	extend: 'Ext.Container',
 	xtype: 'formbuttons',
 	requires: ['Ext.Button'],

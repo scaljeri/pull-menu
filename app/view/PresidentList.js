@@ -1,7 +1,7 @@
-Ext.define('GS.view.PresidentList', {
+Ext.define('PullMenu.view.PresidentList', {
     extend: 'Ext.List',
     xtype: 'presidentlist',
-    requires: ['GS.store.Presidents'],
+    requires: ['PullMenu.store.Presidents'],
     
     config: {
         title: 'American Presidents',

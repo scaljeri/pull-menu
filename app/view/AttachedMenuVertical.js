@@ -1,4 +1,4 @@
-Ext.define('GS.view.AttachedMenuVertical', {
+Ext.define('PullMenu.view.AttachedMenuVertical', {
 	extend: 'Ext.Panel', 
 	xtype: 'attachedmenuvert',
 	config: {

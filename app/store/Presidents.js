@@ -1,8 +1,8 @@
-Ext.define('GS.store.Presidents', {
+Ext.define('PullMenu.store.Presidents', {
     extend: 'Ext.data.Store',
     
     config: {
-        model: 'GS.model.President',
+        model: 'PullMenu.model.President',
         sorters: 'lastName',
         grouper : function(record) {
             return record.get('lastName')[0];

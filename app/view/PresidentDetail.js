@@ -1,4 +1,4 @@
-Ext.define('GS.view.PresidentDetail', {
+Ext.define('PullMenu.view.PresidentDetail', {
     extend: 'Ext.Panel',
     xtype: 'presidentdetail',
 

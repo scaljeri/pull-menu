@@ -5,7 +5,7 @@ Ext.Loader.setPath({
 //</debug>
 
 Ext.application({
-    name: 'GS',
+    name: 'PullMenu',
 
     requires: [
         'Ext.MessageBox',
@@ -48,7 +48,7 @@ Ext.application({
         Ext.fly('appLoadingIndicator').destroy();
         
         // Initialize the main view
-        Ext.Viewport.add(Ext.create('GS.view.Main'));
+        Ext.Viewport.add(Ext.create('PullMenu.view.Main'));
     },
 
     onUpdated: function() {

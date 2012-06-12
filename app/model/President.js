@@ -1,4 +1,4 @@
-Ext.define('GS.model.President', {
+Ext.define('PullMenu.model.President', {
     extend: 'Ext.data.Model',
     config: {
         fields: ['firstName', 'middleInitial', 'lastName']

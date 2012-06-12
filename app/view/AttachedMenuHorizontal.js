@@ -1,4 +1,4 @@
-Ext.define('GS.view.AttachedMenuHorizontal', {
+Ext.define('PullMenu.view.AttachedMenuHorizontal', {
 	extend: 'Ext.Panel', 
 	xtype: 'attachedmenuhor',
 	config: {

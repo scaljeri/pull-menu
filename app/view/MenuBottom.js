@@ -1,4 +1,4 @@
-Ext.define('GS.view.MenuBottom', {
+Ext.define('PullMenu.view.MenuBottom', {
 	extend: 'Ext.Panel', 
 	xtype: 'menubottom',
 	config: {

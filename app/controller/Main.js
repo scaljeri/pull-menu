@@ -1,9 +1,9 @@
 (function(){
 	
-Ext.define('GS.controller.Main', {
+Ext.define('PullMenu.controller.Main', {
     extend: 'Ext.app.Controller',
 
-    requires: ['GS.view.FormButtons'],
+    requires: ['PullMenu.view.FormButtons'],
     config: {
         refs: {
         	topmenu:    'pullmenutop',

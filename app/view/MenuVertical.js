@@ -1,7 +1,7 @@
-Ext.define('GS.view.MenuVertical', {
+Ext.define('PullMenu.view.MenuVertical', {
 	    extend: 'Ext.dataview.List',
 	    xtype: 'presidentmenu',
-	    requires: ['GS.model.President','GS.store.Presidents'],
+	    requires: ['PullMenu.model.President','PullMenu.store.Presidents'],
 
 
 	    config: {
