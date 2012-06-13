@@ -2,55 +2,9 @@
 <html manifest="" lang="en-US">
 <head>
     <meta charset="UTF-8">
-    <title>GS</title>
+    <title>PullMenu Demo</title>
     <style type="text/css">
-    	.pullmenu {
-    		padding: 0!important ;
-    		z-index:10!important;
-    	}
-    	.pullmenu#my-top-menu .x-body {
-    		background-color: black!important;
-    	}
-    	.bottom-menu {
-    		background-image: url(resources/images/bottom-menu.png) ;
-    		background-repeat: no-repeat ;
-    		background-size: 100% 100% ;
-    	}
-    	
-    	.menu-top {
-    		background-image: url(resources/images/top-menu.png) ;
-    		background-repeat: no-repeat ;
-    	}
-    	.doc-button {
-    		background-image: url(resources/images/info.png)!important;
-    		background-repeat: no-repeat ;
-    		background-size: 100% 100% ;
-    		width: 30px ;
-    		height: 30px ;
-    		margin: 5px 20px 0 20px;
-    	}
-    	.ok-button {
-    		background-image: url(resources/images/ok.png)!important;
-    		background-repeat: no-repeat ;
-    		background-size: 100% 100% ;
-    		width: 30px ;
-    		height: 30px ;
-    		margin: 5px 0 5px 20px;
-    	}
-    	.saving {
-    		margin-top: 8px; 
-    	}
-    	#doc-content {
-    		font-size: 15px ;
-    	}
-    	.doc-opt-label {
-    		display: inline-block;
-    		width: 100px ;
-    	}
-    	.doc-opt-expl {
-    		display: inline-block ;
-    		width: 100% ;
-    	}
+
         /**
          * Example of an initial loading indicator.
          * It is recommended to keep this as minimal as possible to provide instant feedback
@@ -111,7 +65,6 @@
             }
         }
     </style>
-    <link href="css/pullmenu.css" rel="stylesheet" type="text/css">
     <script id="microloader" type="text/javascript" src="sdk/microloader/development.js"></script>
 </head>
 <body>
@@ -121,7 +74,7 @@
         <div></div>
     </div>
     
-    <div id="topmenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="topmenu-documentation" class="x-hidden-display" style="color:white;display: none">
     <div style="font-size:20px">Example configuration:</div>
 <!-- HTML generated using hilite.me --><div style="background: #eeeedd; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins: [
 {
@@ -148,7 +101,7 @@
     
     </div>
 
-    <div id="leftmenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="leftmenu-documentation" class="x-hidden-display" style="color:white;display:none">
     <div style="font-size:20px">Example configuration:</div>
 <!-- HTML generated using hilite.me --><div style="background: #eeeedd; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins: [
 {
@@ -171,7 +124,7 @@
     
     </div>
     
-    <div id="bottommenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="bottommenu-documentation" class="x-hidden-display" style="color:white;display:none">
     <div style="font-size:20px">Example configuration:</div>
     <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins<span style="font-weight: bold">:</span> [{
   xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
@@ -194,7 +147,7 @@
     
     </div>
    </div> 
-    <div id="appendmenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="appendmenu-documentation" class="x-hidden-display" style="color:white;display:none">
     <div style="font-size:20px">Example configuration:</div>
     <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins<span style="font-weight: bold">:</span> [{
   xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;Scaljeri.plugin.PullMenu&#39;</span>,

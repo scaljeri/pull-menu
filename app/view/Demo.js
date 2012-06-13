@@ -49,6 +49,16 @@ Ext.define("PullMenu.view.Demo", {
                         '&nbsp;&nbsp;<span style="color: #d0d0d0">}</span><br>' +
                 '<span style="color: #d0d0d0">})</span> <span style="color: #d0d0d0">;</span>' +
                 '</pre></div><br><br>' + 
+                'Furthermore, the following css is required:' + 
+                
+                '<!-- HTML generated using hilite.me --><div style="word-wrap: break-word;background: rgba(0,0,0,.5); overflow:auto;width:auto;color:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #ffffff">.pullmenu</span> <span style="color: #ffffff">{</span><br>' + 
+                '  <span style="color: #fb660a; font-weight: bold">padding</span><span style="color: #ffffff">:</span> <span style="color: #0086f7; font-weight: bold">0</span><span style="color: #ff0007; font-weight: bold; font-style: italic; background-color: rgba(0,0,0,.2);">!important</span> <span style="color: #ffffff">;</span><br>' + 
+                '  <span style="color: #fb660a; font-weight: bold">z-index</span><span style="color: #ffffff">:</span><span style="color: #0086f7; font-weight: bold">10</span><span style="color: #ff0007; font-weight: bold; font-style: italic; background-color: rgba(0,0,0,.2)">!important</span> <span style="color: #ffffff">;</span><br>' + 
+                '<span style="color: #ffffff">}</span><br>' + 
+                '</pre></div><br>' + 
+
+                
+                
                 "On the demo pages is shown how each specific menu type is configured!" 
                 ].join("")
             },

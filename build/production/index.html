@@ -2,55 +2,9 @@
 <html manifest="cache.manifest" lang="en-US">
 <head>
     <meta charset="UTF-8">
-    <title>GS</title>
+    <title>PullMenu Demo</title>
     <style type="text/css">
-    	.pullmenu {
-    		padding: 0!important ;
-    		z-index:10!important;
-    	}
-    	.pullmenu#my-top-menu .x-body {
-    		background-color: black!important;
-    	}
-    	.bottom-menu {
-    		background-image: url(resources/images/bottom-menu.png) ;
-    		background-repeat: no-repeat ;
-    		background-size: 100% 100% ;
-    	}
-    	
-    	.menu-top {
-    		background-image: url(resources/images/top-menu.png) ;
-    		background-repeat: no-repeat ;
-    	}
-    	.doc-button {
-    		background-image: url(resources/images/info.png)!important;
-    		background-repeat: no-repeat ;
-    		background-size: 100% 100% ;
-    		width: 30px ;
-    		height: 30px ;
-    		margin: 5px 20px 0 20px;
-    	}
-    	.ok-button {
-    		background-image: url(resources/images/ok.png)!important;
-    		background-repeat: no-repeat ;
-    		background-size: 100% 100% ;
-    		width: 30px ;
-    		height: 30px ;
-    		margin: 5px 0 5px 20px;
-    	}
-    	.saving {
-    		margin-top: 8px; 
-    	}
-    	#doc-content {
-    		font-size: 15px ;
-    	}
-    	.doc-opt-label {
-    		display: inline-block;
-    		width: 100px ;
-    	}
-    	.doc-opt-expl {
-    		display: inline-block ;
-    		width: 100% ;
-    	}
+
         /**
          * Example of an initial loading indicator.
          * It is recommended to keep this as minimal as possible to provide instant feedback
@@ -111,7 +65,6 @@
             }
         }
     </style>
-    <link href="css/pullmenu.css" rel="stylesheet" type="text/css">
     <script type="text/javascript">(function(i){function r(a){function b(a,j){var c=a.length,b,g;for(b=0;b<c;b++){g=a[b];var e=a,K=b,d=void 0;"string"==typeof g&&(g={path:g});g.shared?(g.version=g.shared,d=g.shared+g.path):(A.href=g.path,d=A.href);g.uri=d;g.key=h+"-"+d;f[d]=g;e[K]=g;g.type=j;g.index=b;g.collection=a;g.ready=!1;g.evaluated=!1}return a}var c;"string"==typeof a?(c=a,a=B(c)):c=JSON.stringify(a);var h=a.id,e=h+"-"+C+o,f={};this.key=e;this.css=b(a.css,"css");this.js=b(a.js,"js");this.assets=this.css.concat(this.js);this.getAsset=
 function(a){return f[a]};this.store=function(){s(e,c)}}function v(a,b){k.write('<meta name="'+a+'" content="'+b+'">')}function p(a,b,c){var h=new XMLHttpRequest,c=c||D,a=a+(-1==a.indexOf("?")?"?":"&")+Date.now();try{h.open("GET",a,!0),h.onreadystatechange=function(){if(4==h.readyState){var a=h.status,d=h.responseText;200<=a&&300>a||304==a||0==a&&0<d.length?b(d):c()}},h.send(null)}catch(d){c()}}function L(a,b){var c=k.createElement("iframe");m.push({iframe:c,callback:b});c.src=a+".html";c.style.cssText=
 "width:0;height:0;border:0;position:absolute;z-index:-999;visibility:hidden";k.body.appendChild(c)}function E(a,b,c){var d=!!a.shared;if(!d)var e=b,f=a.version,l,b=function(j){l=j.substring(0,f.length+4);l!=="/*"+f+"*/"?confirm("Requested: '"+a.uri+"' with checksum: "+f+" but received: "+l.substring(2,f.length)+"instead. Attempt to refresh the application?")&&M():e(j)};(d?L:p)(a.uri,b,c)}function F(a){var b=a.data,a=a.source.window,c,d,e,f;for(c=0,d=m.length;c<d;c++)if(e=m[c],f=e.iframe,f.contentWindow===
@@ -122,7 +75,7 @@ c=document.createElement("base");c.href=a.path.replace(/\/[^\/]*$/,"/");x.append
 b.uri)}},c)})})}var h=[],k=!1,i=function(){},n=function(){d.swapCache();k=!0;i()},m;I("message",F,!1);if(d.status==d.UPDATEREADY)n();else if(d.status==d.CHECKING||d.status==d.DOWNLOADING)d.onupdateready=n,d.onnoupdate=d.onobsolete=function(){i()};!1!==navigator.onLine?f():y("online",f,!1)}var e=a.assets,f=e.length,l;t=a;y("message",F,!1);0==f?h():e.forEach(function(a){var c=u(a.key);null===c?E(a,function(c){s(a.key,c);b(a,c)},function(){b(a,"")}):b(a,c)})}function J(a){null!==k.readyState.match(/interactive|complete|loaded/)?
 w(a):y("DOMContentLoaded",function(){navigator.standalone?setTimeout(function(){setTimeout(function(){w(a)},1)},1):w(a)},!1)}var D=function(){},m=[],k=i.document,x=k.head,y=i.addEventListener,I=i.removeEventListener,n=i.localStorage,d=i.applicationCache,B=JSON.parse,A=k.createElement("a"),z=k.location,C=z.origin+z.pathname+z.search,o="app.json",H=!1,t;if("undefined"===typeof q)var q=i.Ext={};q.blink=function(a){var b=u(a.id+"-"+C+o);v("viewport","width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no");
 v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=new r(b),J(a)):p(o,function(b){a=new r(b);a.store();J(a)})}})(this);
-;Ext.blink({"id":"ce42f9a0-8e4c-11e1-ad4b-13139a2f5ce7"})</script>
+;Ext.blink({"id":"d5b7ef70-b52e-11e1-9064-59925176c97d"})</script>
 </head>
 <body>
     <div id="appLoadingIndicator">
@@ -131,7 +84,7 @@ v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=n
         <div></div>
     </div>
     
-    <div id="topmenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="topmenu-documentation" class="x-hidden-display" style="color:white;display: none">
     <div style="font-size:20px">Example configuration:</div>
 <!-- HTML generated using hilite.me --><div style="background: #eeeedd; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins: [
 {
@@ -158,7 +111,7 @@ v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=n
     
     </div>
 
-    <div id="leftmenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="leftmenu-documentation" class="x-hidden-display" style="color:white;display:none">
     <div style="font-size:20px">Example configuration:</div>
 <!-- HTML generated using hilite.me --><div style="background: #eeeedd; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins: [
 {
@@ -181,7 +134,7 @@ v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=n
     
     </div>
     
-    <div id="bottommenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="bottommenu-documentation" class="x-hidden-display" style="color:white;display:none">
     <div style="font-size:20px">Example configuration:</div>
     <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins<span style="font-weight: bold">:</span> [{
   xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
@@ -204,7 +157,7 @@ v("apple-mobile-web-app-capable","yes");v("apple-touch-fullscreen","yes");b?(a=n
     
     </div>
    </div> 
-    <div id="appendmenu-documentation" class="x-hidden-display" style="color:white">
+    <div id="appendmenu-documentation" class="x-hidden-display" style="color:white;display:none">
     <div style="font-size:20px">Example configuration:</div>
     <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;color:black;background:white;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">plugins<span style="font-weight: bold">:</span> [{
   xclass<span style="font-weight: bold">:</span> <span style="color: #bb8844">&#39;Scaljeri.plugin.PullMenu&#39;</span>,
