@@ -50,7 +50,7 @@ Ext.define('PullMenu.controller.Main', {
         			else { // show documentation
         				Ext.ComponentQuery.query('main')[0].setActiveItem(1) ;
                 		var doc = Ext.fly(id + '-documentation').dom.cloneNode(true) ;
-                		doc.setAttribute('class', '') ;
+                		doc.setAttribute('style', '') ; // remove display:none
                 		Ext.ComponentQuery.query('#doc-title')[0].setTitle('The \'pull\' menu-type configuration') ;
                 		Ext.ComponentQuery.query('#doc-content')[0].setData({ data: doc.outerHTML }) ;
         			}
