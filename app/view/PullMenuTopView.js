@@ -13,7 +13,7 @@ Ext.define('PullMenu.view.PullMenuTopView', {
             			{ 	
                      			top: 	{
                      						xclass: 'PullMenu.view.MenuDrag', 
-                     						mtype: 'slide',
+                     						mtype: 'pull',
                      						fill: true,
                      						scrollable: 'vertical', 
                      						id: 'my-top-menu'
@@ -50,7 +50,6 @@ Ext.define('PullMenu.view.PullMenuTopView', {
 		               			value: 1000,
 		               			listeners: {
 		               				focus: function(){
-		               					console.log('x') ;
 		               				}
 		               			}
 		           			},

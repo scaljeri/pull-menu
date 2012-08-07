@@ -18,9 +18,25 @@
 
 // Your custom code goes here...
 
+.x-title {
+	width: 100% ;
+}
+#doc-title {
+	.x-container {
+		z-index: 10; 
+	}
+}
  .pullmenu {
  	padding: 0!important ;
  	z-index:10!important;
+ }
+ .open-close {
+ 	maring-top: 10px ;
+ }
+ #topdragmenu {
+	.x-scroll-scroller {
+		background-color: black ;
+	} 
  }
   
 

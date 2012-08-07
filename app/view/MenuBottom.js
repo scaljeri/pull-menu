@@ -4,5 +4,6 @@ Ext.define('PullMenu.view.MenuBottom', {
 	config: {
 		cls: 'bottom-menu',
 		height: '200px',
+		width: '100%'
 	 }
 });

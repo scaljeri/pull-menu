@@ -21,6 +21,7 @@
  * Date: Mon Jun 4 12:46:34 2012 +0100
  */
 
+(function(){
 Ext.define('Scaljeri.plugin.PullMenu', {
     extend:    'Ext.Component',
     alias:     'plugin.pullmenu',
@@ -39,10 +40,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         /*
          * This function is called when the menu 'show' or 'hide' animation is completed.
          */
-        readyFn: null,
+        readyFn: Ext.emptyFn,
         
-        dragBarWidth: 20,
-        
+ 
         /*
          * The 'items' object defines which menu's are shown on which sides. 
          * Example:
@@ -50,7 +50,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * items: 
          * 		{ 	
          * 			top: 	{
-         * 						xclass: 'PullMenu.view.MenuDrag',  		// the menu class name
+         * 						xclass: 'PullMenu.view.MenuDrag',  	// the menu class name
          * 						mtype: 'pull',				 		// the menu type 
          * 						fill: false,				 		// fill entire parent component if true
          * 						scrollable: 'vertical',		 		// make the menu content scrollable (NOTE: height of the menu is 0px!!)
@@ -74,43 +74,27 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * 
          */
         items: null,
-        
-        /*
-         * If a menu get animated this value is set to 'true'. An animation occurs when the user releases the menu, at which point the menu
-         * gets animates and is fully shown or hidden.
-         */
-        isAnimating: false,
-        
-        /*
-         * scroll menu additional styling
-         */
-        scrollMenuStyle: {},
-
-		/*
-		 * pull menu additional styling
-		 * TODO: not implemented
-		 */
-		pullMenuStyle: {}
-        
     },
 
     initialize: function() {
         this.callParent();
         
         // private variables
-        this.parent = null ; 					// the component to which this plugin is attached
+        this.parent         = null ; 					// the component to which this plugin is attached
     	this.scrollPosition = null ;			// the scroll x and y position:  { x: val1, y: val2 }
-    	this.prevPosition = { x: 0, y: 0 } ;
-        this.mdim = { top: 0, bottom: 0, left: 0, right: 0 } ; // menu dimensions
-    	this.menuVisible = null ;  				// contains: null, top, bottom, left or right
+    	this.prevPosition   = { x: 0, y: 0 } ;
+        this.mdim           = { top: 0, bottom: 0, left: 0, right: 0 } ; // menu dimensions
+    	this.menuVisible    = null ;  				// contains: null, top, bottom, left or right
+    	this.currentMenu = null ;
     },
 
     init: function(container) {
     	this.parent = container ;
-    	
         var me = this; 
         if ( container.getScrollable() ) // is parent scrollable?
         	this.setScrollable( container.getScrollable().getScroller() ) ;
+        
+    	this.mngr   = new Manager({plugin: this}) ; // manges menu states and cross communication
         
         // fix input and create the menu objects
     	if ( typeof(me.getItems()) != 'object') { // only a string given == xclass for the top menu
@@ -126,392 +110,648 @@ Ext.define('Scaljeri.plugin.PullMenu', {
     		// merge with other defaults
     		items[k] = Ext.Object.merge({}, { fill: true }, items[k] ) ;
     		(function(key){ // closure stuff (use 'me' instead of this)
-    			items[key].instance = me[ me.isScrollable(key) ? 'createScrollableMenu':'createPullMenu'](key, me.getItems()[key]) ;
-    			items[key].instance.on({
-    	  			painted: function(){ // when painted the sizes of the menu is known
-    	  						var xy = key == 'top' || key == 'bottom' ? 'getHeight' : 'getWidth' ;
-    	   						me.mdim[key] = this.element[xy]() ;
-    	   					},
-    	   					single: true,
-    	   					scope: items[key].instance
-    	   				}) ;
+    			if ( me.isScrollable(key)) {
+    				items[key].instance =  new Drag(me, container, key, me.getItems()[key]) ;
+    			}
+    			else {
+    				items[key].instance = new Pull(me, container, key, me.getItems()[key]) ;
+    			}
+    			items[key].instance.setMngr(me.mngr) ;
+    			if ( items[key].instance.getMenu() )
+    				me.parent.insert(0, items[key].instance.getMenu()) ;
     		})(k) ;
     	}
     	me.setItems(items) ; 
+    	if ( this.getScrollable() ) {
+       		this.getScrollable().on({
+       			scrollstart: this.mngr.onScrollStart,
+       			scrollend:   this.mngr.onScrollEnd,
+           		scroll:      this.mngr.onScrollChange,
+           		scope:       this.mngr
+       		});
+       		this.getScrollable().getContainer().onBefore({
+           		dragend: this.mngr.scrollEnd,
+                scope: this.mngr
+       		});
+       		
+    	}
     },
     
     // helpers
     isScrollable: function(position) {
     	return this.getScrollable() ? this.getScrollable().isAxisEnabled( position == 'top' || position == 'bottom' ? 'y' : 'x' ) : false ;
     },
-    getOppositeKey: function(key) {
-    	return key == 'left' ? 'right' : key =='right' ? 'left' : key == 'top' ? 'bottom' : 'top' ;
+    hideMenu: function(key, callback) {
+    	this.getItems()[key].instance.close(callback || this.getReadyFn()) ;
     },
-    getAnimationProperty: function(key) {
-    	return key == 'left' || key == 'right' ? 'width' : 'height' ; 
-    },
-    getRelativeCoord: function(key, pageXY, parentSize) {
-    	return key == 'bottom' || key == 'right' ? parentSize - pageXY : pageXY ;
-    },
-    isPerpendicular: function(key1, key2) {
-    	return key1 == 'top' || key1 == 'bottom' ? key2 == 'top' || key2 == 'bottom' ? false : true : key2 == 'left' || key2 == 'right' ? false : true ;
-    },
-    
-    /* ******************* */
-    /* PULL-LMENU FUNCTIONS */
-    /* ******************* */
-    
-    createPullMenu: function(key, options){
-    	// configure container element
-    	var containerConfig = {
-    		xtype:  'panel',
-    		layout:  key == 'top' || key == 'bottom' ? 'vbox' : 'hbox',
-       		cls:     'pullmenu' +  (options.cls ? ' ' + options.cls : ''),
-       		style:   'overflow:hidden;',
-       		zIndex:  100,
-       		padding: 0,
-       		id:      options.id||null
-    	} ;
-    	if ( options.scrollable )
-    		containerConfig.scrollable = options.scrollable ;
-    	
-    	containerConfig[key == 'top' || key == 'bottom' ? 'width' : 'height'] = '100%' ;
-    	containerConfig[key] = '-1000px' ; // hide panel off screen
-    	
-    	// configure the dragbar 
-    	var dragBarConfig = { 
-       			xtype:  'panel',
-       			layout: 'vbox',
-       			style:  'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
-       			items:  [{
-       				xtype: 'panel',
-       				centered:true,
-       				html: key == 'top' || key == 'bottom' ? 
-       						'<div style="height:10px;width:40px;background:black;margin-top:-1px;border-top:2px solid grey;border-bottom:2px solid grey;"></div>'
-       						:
-       						'<div style="height:40px;width:10px;background:black;margin-left:-1px;border-left:2px solid grey;border-right:2px solid grey;"></div>',
-       				cls: 'drag-bar-stripes'
-       			}
-       			],
-   				docked: this.getOppositeKey(key)
-       		};
-    	dragBarConfig[this.getAnimationProperty(key)] = this.getDragBarWidth() ; // width or height of the drag-bar
-    	
-    	if ( key == 'top' || key == 'left') 
-    		containerConfig.items = [ { xclass: options.xclass }, dragBarConfig ] ;
-    	else 
-    		containerConfig.items = [ dragBarConfig, { xclass: options.xclass }  ] ;
-    		
-       	var cont = Ext.create( 'Ext.Panel', containerConfig ) ;
-    	this.parent.insert(0, cont) ;
-    	this.attachPullMenuListeners(cont, key, options) ;
-    	return cont ;
-    },
-    
-    attachPullMenuListeners: function(cont, key, options) {
-    	var me = this ;
-    	var menu  = { isAnimating: false, isOpened: false, isDraggable: false, move: this.getAnimationProperty(key), parentSize: null } ;
-    	var mngr  = { key: key, startTime: null, startPos: null, pageXY: menu.move == 'height' ? 'pageY' : 'pageX', event: null, lastUpdated: new Date().getTime() } ;
-    	var fps = 0 ;
-    	
-    	var lastUpdated = new Date().getTime() ;
-    	
-    	var position = null ; 
-    	var dragging = null ;
-    	this.parent.element.on({
-        	tap: function(e, node) {
-        		if ( !menu.isAnimating && menu.isDraggable) {
-        			clearInterval(dragging) ;
-        			position = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize ) ;
-        			if ( menu.isDraggable && position < me.getDragBarWidth() ) {
-        				//setTimeout( function(){Ext.Anim.run(cont, 'fade', { out: true, duration: 1000, autoClear: false }) ;}, 1000 ) ;
-        				cont.element.dom.style[key] = '' ;
-        				cont.element.setStyle(key, -me.mdim[key] + 'px') ;
-        				menu.isDraggable = false ;
-        			}
-        			menu.isDraggable = false ;
-        		}
-        	},
-        	drag: function(e, node) {
-        		mngr.event = e ; // used in the 'updateMenu' only at certain intervals
-        	},
-        	dragend: function(e, node) {
-        		if ( !menu.isAnimating && menu.isDraggable ) {
-        			clearInterval(dragging) ;
-        			position = me.getRelativeCoord( key, e[mngr.pageXY], menu.parentSize ) ;
-        			
-        			if ( position > me.mdim[key]) { // make sure the menu is correctly positioned
-        				cont.element.dom.style[key] = '' ; 
-        				cont.element.dom.style[key] = '0px' ; 
-        			}
-        			
-   					menu.isOpened = true ;
-        			if ( (new Date().getTime() - mngr.startTime) < 1000 && Math.abs(mngr.startPos - e[mngr.pageXY]) > 50 ) { // swipe
-        				if ( mngr.startPos > position ) { // determine direction of swipe
-        					me.hidePullMenu(cont, key, position, options.fill == false ? me.mdim[key]:menu.parentSize, menu.move) ;
-        					menu.isOpened = false ;
-        				}
-        				else if ( options.fill == true || position < me.mdim[key]){
-        					me.showPullMenu(cont, key, position, options.fill == false ? me.mdim[key] : menu.parentSize, menu.move) ;
-        				}
-        			}
-        			else  {
-        				if ( menu.parentSize/2 > position ) {
-        					me.hidePullMenu(cont, key, position, options.fill == false ? me.mdim[key]:menu.parentSize, menu.move) ;
-        					menu.isOpened = false ;
-        				}
-        				else if ( options.fill == true || position < me.mdim[key]){
-        					me.showPullMenu(cont, key, position, options.fill == false ? me.mdim[key] : menu.parentSize, menu.move) ;
-        				}
-       				}
-        			menu.isDraggable = false ;
-        		}
-        	}, 
-    		
-        	touchstart: function(e, node) { 
-       			mngr.event = null ;
-       			clearInterval(dragging) ;
-        		if ( !menu.isAnimating ) {
-        			// initialze
-        			menu.parentSize =  me.parent.element[ menu.move == 'height' ? 'getHeight':'getWidth']() ;
-        			mngr.startTime = new Date().getTime() ;
-        			mngr.startPos  = me.getRelativeCoord(key, e[mngr.pageXY], menu.parentSize) ;
-        		
-       				fps = parseInt(1000/me.getFps()) ;
-        			if ( !menu.isOpened && mngr.startPos <= 2*me.getDragBarWidth() ) {
-        				dragging = setInterval(function(){ me.updateMenu(cont,menu, me, options, mngr);}, fps) ;
-        				menu.isDraggable = true ;
-        				//Ext.Anim.run(cont, 'fade', { out: false, duration: 500, autoClear: false }) ;
-        					
-        				// init menu
-        				cont.element.dom.style[menu.move] = '' ;
-        				cont.element.dom.style[menu.move] = me.mdim[key] + 'px' ;
-           				
-           				// position menu outside viewport
-           				this.element.dom.style[key] = '' ; 
-           				this.element.dom.style[key] = (-me.mdim[key] + me.getDragBarWidth())  + 'px' ;
-        			}
-        			else if ( menu.isOpened ) {
-        				if ( options.fill == true && mngr.startPos > menu.parentSize - me.getDragBarWidth() )  {
-        					menu.isDraggable = true ;
-        					dragging = setInterval(function(){ me.updateMenu(cont,menu, me, options, mngr);}, fps) ;
-        				}
-        				else if ( options.fill == false && mngr.startPos >= me.mdim[key] - me.getDragBarWidth() && mngr.startPos <= me.mdim[key] ){
-        					menu.isDraggable = true ;
-        					dragging = setInterval(function(){ me.updateMenu(cont,menu, me, options, mngr);}, fps) ;
-        				}
-        			}
-        		}
-        	},
-        	swipe: function(e, node) {
-        		
-        	},
-        	scope: cont
-    	}) ;
-//    	this.parent.mon(this.parent.element, { // horizontal swipes
-//        	swipe: function( event, node, options, eOpts ){
-//        	}
-//    	});
-    },
-    
-    updateMenu: function(cont, menu, me, options, mngr) {
-  		if ( !menu.isAnimating && menu.isDraggable && mngr.event != null && new Date().getTime() - mngr.lastUpdated > 10 ) {
-  			var position = me.getRelativeCoord(mngr.key, mngr.event[mngr.pageXY], menu.parentSize ) ;
-			if ( options.fill == true || position < me.mdim[mngr.key]){
-				if ( position - me.mdim[mngr.key] >= 0  ) {  
-					cont.element.dom.style[mngr.key] = '' ;
-					cont.element.setStyle(mngr.key, '0px') ;
-					
-						cont.element.dom.style[menu.move] = '' ;
-					cont.element.dom.style[menu.move] = (position <= menu.parentSize ? position:menu.parentSize) + 'px' ;
-				}
-				else {
-					cont.element.dom.style[menu.move] = '' ;
-					cont.element.dom.style[menu.move] = me.mdim[mngr.key] + 'px' ;
-    				
-					cont.element.dom.style[mngr.key] = '' ;
-					cont.element.setStyle(mngr.key, (position - me.mdim[mngr.key]) + 'px') ;
-				}
-			}
-			else {
-				cont.element.dom.style[mngr.key] = '' ;
-				cont.element.setStyle(mngr.key, '0px') ;
-			}
-			menu.lastUpdated = new Date().getTime() ;
-		}
-    },
-    
-    hidePullMenu: function(cont, key, position, sizeParent, property ) {
-    	var me = this ;
-    	var hideMenu = function() {
-    		var total = me.mdim[key] - me.getDragBarWidth() + (position < me.mdim[key] ? (me.mdim[key] - position) : 0) ; 
-    		me.animatePullMenu(cont, key, -me.mdim[key] + (me.getDelayHide() ? me.getDragBarWidth() : 0 ), total, 'momentum', function(){ 
-				setTimeout(function(){
-					cont.element.dom.style[key] = '' ;
-    				cont.element.setStyle(key, -2*me.mdim[key] + 'px') ; // make sure its off screen
-    				me.getReadyFn(false) ;
-				},me.getDelayHide());}) ;
-    	} ;
-    	if ( position > this.mdim[key]) 
-    		this.animatePullMenu( cont, property, me.mdim[key], position - me.mdim[key], 'linear', hideMenu ) ;
-    	else
-    		hideMenu() ;
-    },
-    showPullMenu: function(cont, key, position, sizeParent, property  ) {
-    	var me = this ;
-    	var showMenu = function() {
-    		var total = sizeParent - (position>me.mdim[key]?position:me.mdim[key]) ;
-    		if ( total > 0 ) {
-    			me.animatePullMenu(cont, property, sizeParent, total, 'momentum', function(){
-    				cont.element.dom.style[property] = '' ;
-					cont.element.dom.style[property] = '100%' ; // fix resize issues when menu isOpened
-    				me.getReadyFn(true) ;
-    			}) ;
-    		}
-    	} ;
-    	if ( position < this.mdim[key]) 
-    		this.animatePullMenu( cont, key, 0, me.mdim[key] - position, 'linear', showMenu ) ;
-    	else
-    		showMenu() ;
-    },
-    
-    animatePullMenu: function(comp, prop, to, total, easing, callback ){
-    	var me = this ;
-    	if ( !this.getIsAnimating() ) {
-    		this.setIsAnimating(true) ;
-			var config = {
-					element: comp.element,
-    		    	duration: Math.round(total/ (prop == 'height' || prop == 'width' ? this.getAnimationFillSpeed():this.getAnimationMenuSpeed())*1000),
-    		    	easing: easing,
-    		    	preserveEndState: true,
-    		    	onEnd: function(){ me.setIsAnimating(false); callback && callback();},
-    		    	from: {},
-    		    	to: {}
-			}
-			config.to[prop] = to + 'px' ;
-			Ext.Animator.run(config) ; 
-    	}
-    },
-    
-    /* SCROLL-MENU FUNCTIONS */
-    
-    createScrollableMenu: function(key, options) {
-    	var menu = Ext.create( options.xclass, {} ) ;
-    	var styles = {
-    			'position':           'absolute',
-				'display':            '-webkit-box!important',
-				'-webkit-box-orient': 'horizontal',
-				'box-orient':         'horizontal',
-				'-webkit-box-align':  'center',
-				'box-align':          'center',
-				'-webkit-box-pack':   'center',
-				'box-pack':           'center',
-				'z-index':			  1000
-    	}
-    	styles[key] = '-' + menu[key == 'top' || key == 'bottom' ? 'getHeight':'getWidth']() ;
-		menu.setStyle( Ext.Object.merge( styles, this.getScrollMenuStyle() ) );
-		
-		this.parent.insert(0, menu) ;
-	
-        //me.maxScroller = me.scrollable.getMaxPosition();
-       	this.getScrollable().on({
-           	//maxpositionchange: me.setMaxScroller,
-           	scroll: this.onScrollChange,
-           	scope: this
-       	});
-       	
-       	// fired when the component is released (stopped scrolling)
-       	// this.parent.element === this.getScrollable().getContainer() but different behavior :(
-       	this.getScrollable().getContainer().onBefore({
-                dragend: 'onScrollerDragEnd',
-                scope: this
-           });
-       	return menu ;
-    },
-
-    // scrolling
-    onScrollChange: function(scroller, x, y) {
-    	this.scrollPosition = { x: x, y: y } ;
-    },
-    
-    onScrollerDragEnd: function() {
-        var diffX =  this.scrollPosition.x - this.prevPosition.x ;
-        var diffY =  this.scrollPosition.y - this.prevPosition.y ;
-        
-        var currentMenu = this.menuVisible ;
-        
-        if (Math.abs(diffY) > Math.abs(diffX) ) { // show/hide top/bottom menu
-        	this.menuVisible = diffY < 0 ? (this.menuVisible == 'bottom' ? null: 'top') : (this.menuVisible == 'top' ? null : 'bottom') ;
-        }
-        else { // show/hide left/right menu
-        	this.menuVisible = diffX < 0 ? (!this.menuVisible ? 'left': (this.menuVisible == 'right' ? null: 'left')) : (!this.menuVisible ? 'right' : (this.menuVisible == 'left' ? null : 'right')) ;
-        }
-        
-        if ( currentMenu != null && this.menuVisible != currentMenu )
-        	this.showHideMenu(currentMenu, true) ;
-        else if ( this.menuVisible ) {
-        	if ( this.menuVisible == 'top' ) {
-        		this.showHideMenu('top') ;
-        	}
-        	else if ( this.menuVisible == 'bottom' ) {
-        		this.showHideMenu('bottom') ;
-        	}
-        	else if ( this.menuVisible == 'left' ) {
-        		this.showHideMenu('left') ;
-        	}
-        	else if ( this.menuVisible == 'right' ) {
-        		this.showHideMenu('right') ;
-        	}
-        }
-        else
-        	this.showHideMenu(currentMenu, true);
-    },
-    showHideMenu: function(key, hide) {
-    	var mainAxis  = (key == 'top' || key == 'bottom' ? 'y' : 'x') ;
-    	
-    	if ( this.getItems()[key].mtype == 'drag-overlay' ) {
-    		var config = {
-    				element: this.getItems()[key].instance.element,
-        		    duration: 150,
-        		    easing: 'ease-in',
-        		    preserveEndState: true,
-        		    from: {},
-        		    to: {}
-    		}
-    		config.to[key] = hide == true ? -this.mdim[key] : 0 ;
-    		Ext.Animator.run(config) ; 
-    	}
-    	else {
-    		var scrollAxis = 'x', fixedAxis = 'y', sign = 1 ;
-    		if ( key == 'left')
-    				sign =  -1 ;
-    		else if ( key == 'top') {
-    			scrollAxis = 'y'; fixedAxis = 'x' ;sign= -1;
-    		}
-    		else if ( key == 'bottom') {
-    			scrollAxis = 'y'; fixedAxis = 'x' ;sign = 1 ;
-    		}
-    		
-   			var minmax = (key== 'right' || key == 'bottom' ? 'max':'min') + 'Position' ;
-    		this.getScrollable()[minmax][scrollAxis] = hide == true ? 0 : sign * this.mdim[key];
-   			this.getScrollable()[minmax][fixedAxis] = 0 ;
-    	}
-   		this.positionState = { top: 0, bottom: 0, left: 0, right: 0 } ; // reset
-   		this.positionState[key] = -this.mdim[key] ;
-    },
-
-    hideMenu: function(key) {
-    	if ( this.getItems()[key].mtype == 'pull') {
-    		// TODO
-    	}
-    	else {
-    		this.showHideMenu(key, true) ;
-    		this.getScrollable().scrollTo(null, 0, true);
-    	}
-    },
-    showMenu: function(key) {
-    	// TODO
+    showMenu: function(key, callback) {
+   		this.getItems()[key].instance.open(callback||this.getReadyFn()) ;
     }
 });
 
+	var Manager = Ext.Class({
+		// swipe
+		timeThreshold: 300,
+		pixelThreshold: 50,
+		
+		// pullmenu
+		isOpenend: null,
+		isAnimating: false,
+		
+		// dragmenu
+		scrollPosition:    	{ x: 0, y: 0 },			// the scroll x and y position:  { x: val1, y: val2 }
+		minmaxPosition:		{ min: { x: null, y: null}, max: {x: null, y:null}},
+		undoMinMax: 		null,
+		scrollOpen: 		null,
+		cacheScrollOpen: 	null,
+		openAScrollMenu: 	false,
+    	prevPosition:     	{ x: 0, y: 0 },
+    	cachePrevPosition: 	{ x: 0, y: 0 },
+    	swipe: 				{ x: false, y: false},
+    	
+		starttime: 0,
+		
+		constructor: function(config) {
+			Ext.Object.merge(this, config) ;
+			
+			// initialize stuff before anything else
+	    	this.plugin.getScrollable().getContainer().onBefore({
+	            dragend: this.beforeScrollEnd,
+	            scope: this
+	       });
+		},
+		isPerpendicular: function(key1, key2) {
+	    	return key1 == 'top' || key1 == 'bottom' ? key2 == 'top' || key2 == 'bottom' ? false : true : key2 == 'left' || key2 == 'right' ? false : true ;
+		},
+		getOpposite: function(key) {
+			return key == 'top' ? 'bottom' : key == 'bottom' ? 'top' : key == 'left' ? 'right' : 'left' ;
+		},
+		getScrollAxis: function(key) {
+			return key == 'top' || key == 'bottom' ? 'y' : 'x' ;
+		},
+		
+		// pullmenu
+		canOpen: function(key) {
+			return !this.isOpened || ((this.isOpened && this.isPerpendicular(key, this.isOpened)) || (this.isOpened && key == this.getOpposite(key))) ;
+		},
+		open: function(key) {
+			this.isOpened = key
+		},
+		close: function(key) {
+			this.isOpened = null ;
+		},
+		
+		/* Event handlers - append menus */
+		onScrollStart: function(scroller, x, y){
+			this.starttime = new Date().getTime() ;
+		},
+		onScrollEnd: function(scroller, x, y) {
+			if ( this.undoMinMax) { // if these settings are wrong, strange scroll behavior can occure!
+				if ( this.undoMinMax.min.x )  
+					this.plugin.getScrollable().minPosition.x = null ;
+				if ( this.undoMinMax.min.y ) 
+					this.plugin.getScrollable().minPosition.y = null ;
+				if ( this.undoMinMax.max.x ) 
+					this.plugin.getScrollable().maxPosition.x = null ;
+				if ( this.undoMinMax.max.y ) 
+					this.plugin.getScrollable().maxPosition.y = null ;
+				this.undoMinMax = null ;
+			}
+		},
+		onScrollChange: function(scroller, x, y) {
+		  	this.scrollPosition.x = x;
+		  	this.scrollPosition.y = y ;
+		  	
+		  	
+		},
+		setScrollPosition: function(axis, position) {
+			this.cachePrevPosition[axis] = position ;
+			this.cachePrevPosition[axis == 'x'?'y':'x'] = 0 ;
+		},
+		beforeScrollEnd: function() {
+			this.checkSwipe() ;
+			this.minmaxPosition = { min:{},max:{}} ;
+			this.scrollOpen = this.cacheScrollOpen ;
+			this.openAScrollMenu = false ;
+		},
+		scrollEnd: function() { // called when all menus objects checked their stuff
+			this.prevPosition.x = this.cachePrevPosition.x ;
+			this.prevPosition.y = this.cachePrevPosition.y ;
+			
+			if ( !this.scrollOpen ) {
+				this.setScrollPosition('x', 0)
+				this.setScrollPosition('y', 0)
+			}
+			
+			if ( typeof(this.minmaxPosition.min.x) == 'number') 
+				this.plugin.getScrollable().minPosition.x = this.minmaxPosition.min.x ;
+			if ( typeof(this.minmaxPosition.min.y) == 'number') 
+				this.plugin.getScrollable().minPosition.y = this.minmaxPosition.min.y ;
+			if ( typeof(this.minmaxPosition.max.x) == 'number') 
+				this.plugin.getScrollable().maxPosition.x = this.minmaxPosition.max.x ;
+			if ( typeof(this.minmaxPosition.max.y) == 'number') 
+				this.plugin.getScrollable().maxPosition.y = this.minmaxPosition.max.y ;
+		},
+		checkSwipe: function(direction ) {
+			var dirs = ['x', 'y'] ;
+			for(var dir in dirs){
+				var tdiff = new Date().getTime() - this.starttime ; // time difference
+				var pdiff = Math.abs(this.scrollPosition[dirs[dir]] -this.prevPosition[dirs[dir]]) ; // pixel difference
+				
+				this.swipe[dirs[dir]] = tdiff < this.timeThreshold && pdiff > this.pixelThreshold ;
+			}
+		},
+		canScrollMenuOpen: function(key) {
+			return !this.scrollOpen || this.isPerpendicular(key, this.scrollOpen) ? true : !this.isPerpendicular(key, this.scrollOpen) && this.swipe[this.getScrollAxis(key)] == true ? true : false ;
+		},
+		scrollMenuClose: function(key) {
+			if ( this.openAScrollMenu == false)
+				this.cacheScrollOpen = null ;
+			this.minmaxPosition = Ext.Object.merge({min: {x:0,y:0}, max: {x:0,y:0}}, this.minmaxPosition) ;
+		},
+		scrollMenuOpen: function(key, settings, unset) {
+			this.openAScrollMenu = true ;
+			this.cacheScrollOpen = key ;
+			this.undoMinMax = unset ;
+			Ext.Object.merge( this.minmaxPosition, settings ) ;
+		},
+	}) ;
+	
+	var Drag = Ext.Class({
+		scrollAxis: 'x', // horizontal scrolling
+		fixedAxis: 'y',
+		directionSign: -1,
+		isOpened: false,
+		getSize: 'getWidth',
+		minMaxPosition: null,
+		
+		// configurable options with default values
+		mtype: 'drag-append', // or drag-overlay
+		threshold: 0,
+		duration: 150,
+		menuId: null,
+		
+		constructor: function(plugin, parent, key, config) {
+			Ext.Object.merge(this, config) ;
+			this.plugin = plugin ;
+			this.parent = parent ;
+			this.key    = key ;
+			
+			if ( key == 'top' || key == 'bottom') {
+				this.scrollAxis = 'y' ;
+				this.fixedAxis  = 'x' ;
+				this.getSize    = 'getHeight' ;
+			}
+			if ( key == 'bottom' || key == 'right') {
+				this.directionSign = 1 ;
+			}
+			this.minMaxPosition = (key== 'right' || key == 'bottom' ? 'max':'min') + 'Position' ;
+			
+	    	this.menu = Ext.create( config.xclass, { id: this.menuId } ) ;
+	    	var styles = {
+	    			'position':           'absolute',
+					'display':            '-webkit-box!important',
+					'-webkit-box-orient': 'horizontal',
+					'box-orient':         'horizontal',
+					'-webkit-box-align':  'center',
+					'box-align':          'center',
+					'-webkit-box-pack':   'center',
+					'box-pack':           'center',
+					'z-index':			  1000
+	    	}
+	    	styles[key] = '-' + this.menu[this.key == 'top' || this.key == 'bottom' ? 'getHeight':'getWidth']() ;
+			this.menu.setStyle(styles);
+			
+			this.parent.insert(0, this.menu) ;
+		
+	       	// this.parent.element === this.getScrollable().getContainer() but different behavior :(
+	       	this.plugin.getScrollable().getContainer().onBefore({
+	                dragend: 'onScrollerDragEnd',
+	                scope: this
+	           });
+		},
+		onScrollerDragEnd: function(){
+			
+			// TODO: this is computed for each menu
+			var diffXY = { x: this.mngr.scrollPosition.x - this.mngr.prevPosition.x,
+						   y: this.mngr.scrollPosition.y - this.mngr.prevPosition.y 
+			} ;
+			
+			if ( this.threshold < Math.abs(diffXY[this.scrollAxis] || this.mngr.swipe[this.scrollAxis]) ) {
+				var diff  = Math.abs(diffXY.x) - Math.abs(diffXY.y) ;
+				if ( this.scrollAxis == 'x' && diff > 0 || this.scrollAxis == 'y' && diff < 0 ) {
+					var open = diffXY[this.scrollAxis] < 0 ?  this.directionSign == 1 ? false : true : this.directionSign == 1 ? true:false ; // open or close 
+					this.size = parseInt(this.menu[this.getSize]()) ; // menu size can change
+					
+					if ( open == false && this.isOpened ) {
+						this.mtype == 'drag-overlay' ? this.animateDragOverlayMenu( -this.size, false ) : this.setScrollerPosition(0, false) ;
+					}
+					else if ( open && this.mngr.canScrollMenuOpen(this.key) ) {
+						if ( this.mtype == 'drag-overlay') {
+							this.mngr.canOpen(this.key) || this.mngr.swipe[this.scrollAxis] ? this.animateDragOverlayMenu( 0, true  ) : null ;
+						}
+						else 
+							this.setScrollerPosition(this.size, true) ;
+					}
+	        	}
+	        	
+	        }
+		},
+		setScrollerPosition: function(pos, open) {
+			if ( !open) // close
+				this.mngr.scrollMenuClose(this.key) ;
+			else {
+				var settings = { min:{}, max:{} } ;
+				var undo = { min:{}, max:{} } ;
+				if ( (this.key == 'left' || this.key == 'top') ) { //} || this.mngr.swipe[this.scrollAxis] == true && this.mngr.scrollOpen) {
+					settings.min[this.scrollAxis] = this.directionSign * pos ;
+					settings.max[this.scrollAxis] = this.directionSign * pos ;
+					settings.min[this.fixedAxis] = 0 ;
+					settings.max[this.fixedAxis] = 0 ;
+				}
+				else {
+					settings.max[this.scrollAxis] = this.directionSign * pos ;
+					settings.min[this.scrollAxis] = this.directionSign * pos ;
+					settings.max[this.fixedAxis] = 0 ;
+					settings.min[this.fixedAxis] = 0 ;
+					
+					undo.min[this.scrollAxis] = true ; // fix scroll settings 
+				}
+				this.mngr.scrollMenuOpen(this.key,settings, undo) ;
+			}
+			
+			this.isOpened = open ;
+			this.mngr.setScrollPosition(this.scrollAxis, this.directionSign * parseInt(pos)) ;
+		},
+		animateDragOverlayMenu: function(to, open) {
+			var me = this ;
+			var config = {
+    				element: this.menu.element,
+        		    duration: this.duration,
+        		    easing: 'ease-in',
+        		    preserveEndState: true,
+        		    from: {},
+        		    to: {},
+        		    onEnd: function() {
+        		    	me.mngr[open ? 'open':'close'](me.key) ;
+        		    	me.isOpened = open ;
+        		    }
+    		}
+    		config.to[this.key] = to ;
+    		Ext.Animator.run(config) ; 
+			this.mngr.setScrollPosition(this.scrollAxis, 0) ;
+		},
+		close: function(callback) {
+			if ( this.mtype == 'drag-overlay')
+				this.animateDragOverlayMenu( -parseInt(this.menu[this.getSize]()), true) ;
+			else {
+				var width = parseInt(this.menu[this.getSize]()) ;
+				this.plugin.getScrollable().scrollTo(0,0) ;
+				this.setScrollerPosition(width, false) ;
+			}
+			setTimeout(callback, this.duration) ;
+		},
+		open: function(callback) {
+			if ( this.mtype == 'drag-overlay')
+				this.animateDragOverlayMenu(0, true) ;
+			else {
+				var width = parseInt(this.menu[this.getSize]()) ;
+				this.plugin.getScrollable().scrollTo(
+						this.key == 'right' ? width : this.key == 'left' ? -width : 0,
+						this.key == 'bottom' ? width : -width ) ;
+				this.setScrollerPosition(width, true) ;
+			}
+			setTimeout(callback, this.duration) ;
+		},
+		getMenu: function(){
+			return this.menu ;
+		},
+		setMngr: function(mngr){ this.mngr = mngr ;}
+	}) ;
+	
+	var Pull = Ext.Class({
+		//extend: Menu,
+		
+		// configurable variables
+        containerId: null,
+        scrollable: 'none',
+        dragBarWidth: 20,
+        key: null,
+        fill: true,
+        delayHide: null, 	// delay in ms
+        dragBarWidth: 20,
+        dragBarStyle: 'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
+        dragBarHtml:  { height: '<div style="height:10px;width:40px;background:black;margin-top:-1px;border-top:2px solid grey;border-bottom:2px solid grey;"></div>',
+        			    width:  '<div style="height:40px;width:10px;background:black;margin-left:-1px;border-left:2px solid grey;border-right:2px solid grey;"></div>'
+        },
+        
+        
+        // private
+        isAnimating: false, 
+        isOpened: false,
+        pageXY: 'pageY',
+        animationProperty: 'height',
+		getSize: 'getHeight',
+        thresholds: { open: 0, close: 0 },
+		parentSize: 0,
+        
+		constructor: function(plugin, parent, key, config) {
+			Ext.Object.merge(this, config) ;
+			this.plugin = plugin ;
+			this.parent = parent ;
+			this.key = key ;
+			if ( ! window.x )
+				window.x = {} ;
+				window.x[this.key] = this ;
+			
+           	if( key == 'left' || key == 'right' ) { // fix defaults
+           		this.animationProperty = 'width' ; 
+           		this.pageXY = 'pageX' ;
+           		this.getSize = 'getWidth' ;
+           	}
 
+            // configure container element
+            var containerConfig = {
+            		xtype:  'panel',
+                	layout:  config.key == 'top' || config.key == 'bottom' ? 'vbox' : 'hbox',
+                	cls:     'pullmenu' +  (config.cls ? ' ' + config.cls : ''),
+                	style:   'overflow:hidden;',
+                	zIndex:  100,
+                	padding: 0,
+                	id:      this.containerId
+                } ;
+            
+            // TODO: add this to the above configuration object directly
+            if ( this.scrollable != 'none' )
+                    containerConfig.scrollable = this.scrollable ;
+
+            containerConfig[this.animationProperty == 'height' ? 'width' : 'height'] = '100%' ;
+            containerConfig[this.key] = '-1000px' ; // hide panel off screen
+
+            // configure the dragbar
+            var dragBarConfig = {
+                            xtype:  'panel',
+                            layout: 'vbox',
+                            style:  this.dragBarStyle,
+                            items:  [{
+                                    xtype: 'panel',
+                                    centered:true,
+                                    html: this.dragBarHtml[this.animationProperty],
+                                    cls: 'drag-bar-stripes'
+                            	}],
+                            docked: this.getOppositeKey()
+                    };
+            dragBarConfig[this.animationProperty] = this.dragBarWidth ; // width or height of the drag-bar
+            
+            if ( config.key == 'top' || config.key == 'left')
+                containerConfig.items = [ { xclass: this.xclass }, dragBarConfig ] ;
+            else
+                containerConfig.items = [ dragBarConfig, { xclass: this.xclass }  ] ;
+
+            this.container = Ext.create( 'Ext.Panel', containerConfig ) ;
+            
+            this.container.on({
+	  			painted: function(){ // when painted the size of the menu is known
+	   						this.size = this.container.element[this.getSize]() ;
+	   					// init menu - reset its size (width or height)
+	   						this.container.element.dom.style[this.animationProperty] = '' ;
+	   						this.container.element.dom.style[this.animationProperty] = this.size + 'px' ;
+           				
+	   						// position menu outside viewport only showing dragbar
+	   						this.container.element.dom.style[this.key] = '' ; 
+	   						this.container.element.dom.style[this.key] = (-this.size - this.dragBarWidth - 5)  + 'px' 
+	   						this.mngr.isOpened = null ; // when painted no menus are opened!
+	   					},
+	   					//single: true,
+	   					scope: this
+	   		}) ;
+            this.parent.element.on({
+            // TODO: if applicable stop propagation
+	   			touchstart: function(e, node) {
+	   				this._interval = null ;
+	   				this._e = e ;
+   					this.startTime  = new Date().getTime() ;
+   					this.startPos   = this.convertCoordinates(e) ;
+   					if ( (this.mngr.canOpen(this.key) && this.startPos < this.dragBarWidth + 10) || 
+   						 (this.isOpened == true && 
+   								(this.startPos > this.parentSize - this.dragBarWidth - 10 ||
+   								(!this.fill && this.startPos <= this.size && this.startPos > this.size - this.dragBarWidth - 10))
+   						)
+   					) {
+	   					if (  this.parentSize != this.parent.element[this.getSize]() )
+	   						this.preComputeSettings()
+	   					if ( this.mngr.canOpen(this.key) ) {
+	   						this.mngr.open(this.key) ;	   						
+	   							
+	   						// init menu - reset its size (width or height)
+	   						this.container.element.dom.style[this.animationProperty] = '' ;
+	   						this.container.element.dom.style[this.animationProperty] = this.size + 'px' ;
+           				
+	   						// position menu outside viewport only showing dragbar
+	   						this.container.element.dom.style[this.key] = '' ; 
+	   						this.container.element.dom.style[this.key] = (-this.size + this.dragBarWidth)  + 'px' 
+	   					}
+	   							
+	   					this.parent.element.on({	// attach event listeners
+	   						tap: this.onTap,
+	   						drag: {
+	   							fn: this.onDrag,
+	   							//buffer: 1000, //parseInt(1000/this.plugin.getFps()),
+	   							order: 'before',
+	   							scope: this
+	   						},
+	   						dragend: this.onDragEnd,
+	   						scope: this
+	   					}) ;
+	   					var me = this ;
+	   					this._interval = setInterval( function(){me.repaint();}, parseInt(1000/this.plugin.getFps()) ) ;
+	   				}
+	   			},
+	   			scope: this
+            }) ;
+		},
+		setMngr: function(mngr) {
+			this.mngr = mngr ;
+		},
+		removeEventListeners: function() {
+			this.parent.element.un('drag', this.onDrag) ;	 // remove event listeners
+			this.parent.element.un('dragend', this.onDrag) ;
+		},
+		onTap: function(e, node) {
+			clearInterval(this._interval) ;
+			var position = this.convertCoordinates(e) ;
+			if ( position < this.dragBarWidth + 10 && !this.isOpened ) {
+				this.container.element.dom.style[this.key] = '' ;
+				this.container.element.setStyle(this.key, -this.size + 'px') ;
+				this.mngr.close(this.key) ;
+			}
+			//if ( )
+		},
+		onDrag: function(e, node) {
+			this._e = e ;
+		},
+		onDragEnd: function(e, node) {
+			if ( this._interval ) {
+				clearInterval(this._interval) ;
+				this._e = null ;
+   				var position = this.convertCoordinates(e) ;
+    			
+    			if ( position > this.size ) {
+    				this.container.element.dom.style[this.key] = '' ; 
+    				this.container.element.dom.style[this.key] = '0px' ; 
+    			}
+    			else {
+    				this.container.element.dom.style[this.animationProperty] = '' ; 
+    				this.container.element.dom.style[this.animationProperty] = this.size + 'px' ; 
+    			}
+    			
+    			if ( (new Date().getTime() - this.startTime) < 1000 && Math.abs(this.startPos - e[this.pageXY]) > 50 ) { // swipe
+    				if ( this.startPos > position ) { // determine direction of swipe
+    					this.hidePullMenu(position) ;
+    				}
+    				else if ( this.fill == true || position < this.size){
+    					this.showPullMenu(position) ;
+    				}
+    			}
+    			else  {
+    				if ( this.parentSize/2 > position ) {
+    					this.hidePullMenu(position) ;
+    				}
+    				else if ( this.fill == true || position < this.size ) {
+    					this.showPullMenu(position) ;
+    				}
+    			}
+				this.removeEventListeners() ;
+			}
+		},
+		repaint: function() {
+	  		if ( this._e ) {
+	  			var position = this.convertCoordinates(this._e) + this.dragBarWidth/2 ;
+				if ( position - this.size >= 0 && this.fill == true  ) {  
+						this.container.element.dom.style[this.animationProperty] = '' ;	// adjust the width/height of the container
+						this.container.element.setStyle(this.animationProperty, Math.min(position, this.parentSize) + 'px' ) ;
+				}
+				else if ( this.size > position ){
+					this.container.element.dom.style[this.key] = '' ;					// adjust the position of the menu (top/left/right/bottom)
+					this.container.element.setStyle(this.key, (position - this.size) + 'px') ;
+				}
+				else {
+					this.container.element.dom.style[this.key] = '' ;					// make sure the menu is fully shown
+					this.container.element.setStyle(this.key, '0px') ;
+				}
+	  		}
+		},
+	
+		preComputeSettings: function() {
+			this.parentSize = this.parent.element[this.getSize]()
+		},
+		convertCoordinates: function(e) {
+			return this.key == 'right' || this.key == 'bottom' ? this.parentSize - e[this.pageXY] : e[this.pageXY] ;
+		},
+		getOppositeKey: function() {
+    		var k = this.key ;
+    		return k == 'left' ? 'right' : k =='right' ? 'left' : k == 'top' ? 'bottom' : 'top' ;
+		},
+	    getMenu: function() {
+	    	return this.container ;
+	    },
+	    
+	    open: function(callback) {
+	    	if ( this.isOpened == false ) {
+	    		this.preComputeSettings() ;
+	    		this.showPullMenu(0, callback) ;
+	    	}
+	    	else
+	    		callback(false) ;
+	    },
+	    close: function(callback) {
+	    	if ( this.isOpened == true ) {
+	    		this.preComputeSettings() ;
+	    		this.hidePullMenu(this.parentSize, callback) ;
+	    	}
+	    },
+	    
+	    hidePullMenu: function(position, callback) { 
+	    	var me = this ;
+	    	this.isOpened = false ;
+	    	var menuFn = function() {
+		    	me.menuAnimation(-me.size + (me.delayHide ? me.dragBarWidth : 0), me.size, function(){
+		    		me.mngr.close(me.key) ;
+					setTimeout(function(){
+						me.container.element.dom.style[me.key] = '' ;
+		   				me.container.element.setStyle(me.key, -2*me.size + 'px') ; // make sure its off screen
+		   				//me.plugin.getReadyFn()(false) ;
+		   				callback && callback(false) ;
+					}, me.delayHide ) ;
+				}) ;
+	   		} ;
+	    	if ( position > this.size ) 
+	    		this.fillAnimation(this.size, position - this.size, menuFn) ;
+	    	else 
+	    		menuFn() ;
+	    },
+	    showPullMenu: function(position, callback) {
+	    	this.isOpened = true ;
+    		this.mngr.open(this.key) ;
+	    	if ( position < this.size ) { // animate menu first, then fill the rest
+	    		var me = this ;
+	    		this.menuAnimation(0, this.size - position, function(){
+	    			if ( me.fill )
+	    				me.fillAnimation(me.parentSize, me.parentSize - me.size, callback) ;
+	    			else
+	    				callback(true) ;
+	    		})
+	    	}
+	    	else if ( this.fill ){
+	    		this.fillAnimation(this.parentSize, this.parentSize - position, callback) ;
+	    	}
+	    },
+	    
+	    menuAnimation: function(to, total, callback) {
+	    	if ( !this.isAnimating ) {
+	    		this.isAnimating = true ;
+	    		var me = this ;
+	    		var config = {
+						element: this.container.element,
+	    		    	duration: this.getAnimationDuration(total, this.plugin.getAnimationMenuSpeed()), 
+	    		    	easing: 'linear',
+	    		    	preserveEndState: true,
+	    		    	onEnd: function(){ me.isAnimating = false; callback && callback();},
+	    		    	from: {},
+	    		    	to: {}
+				} ;
+	    		config.to[this.key] = to + 'px' ;
+				Ext.Animator.run(config) ; 
+	    	}
+	    },
+	    fillAnimation: function(to, total, callback) {
+	    	if ( !this.isAnimating ) {
+	    		this.isAnimating = true ;
+	    		var me = this ;
+	    		var config = {
+						element: this.container.element,
+	    		    	duration: this.getAnimationDuration(total, this.plugin.getAnimationFillSpeed()),
+	    		    	easing: 'momentum',
+	    		    	preserveEndState: true,
+	    		    	onEnd: function(){ 
+	    		    		me.isAnimating = false; 
+	    		    		if ( total == this.parentSize ) {
+	    		    			me.container.element.dom.style[me.animationProperty] = '' ;
+	    		    			me.container.element.dom.style[me.animationProperty] = '100%' ; // fix resize issues when menu isOpened
+	    		    		}
+	    		    		callback && callback();
+	    		    	},
+	    		    	from: {},
+	    		    	to: {}
+				} ;
+	    		config.to[this.animationProperty] = to + 'px' ;
+				Ext.Animator.run(config) ; 
+	    	}
+	    },
+	    getAnimationDuration: function(total, pxps) {
+	    	return Math.round( 1000 * total / pxps ) ;
+	    }
+	}) ;
+	
+
+})() ;
