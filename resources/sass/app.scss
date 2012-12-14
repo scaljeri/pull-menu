@@ -34,7 +34,7 @@
  	maring-top: 10px ;
  }
  #topdragmenu {
-	.x-scroll-scroller {
+	.x-scroll-scroller, .pullmenu .x-inner {
 		background-color: black ;
 	} 
  }
@@ -73,6 +73,9 @@
     		background-image: url(../images/bottom-menu.png) ;
     		background-repeat: no-repeat ;
     		background-size: 100% 100% ;
+		.x-panel-inner {
+			background-color: transparent!important ;
+		}
     	}
     	
     	.menu-top {

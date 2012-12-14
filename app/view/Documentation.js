@@ -24,6 +24,6 @@ Ext.define("PullMenu.view.Documentation", {
     		tpl: '<div id="doc-content">{data}</div>',
     		id: 'doc-content',
     		style: 'margin:0 20px 0 20px;'
-    	}],
+    	}]
     }
 }) ;

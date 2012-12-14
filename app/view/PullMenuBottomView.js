@@ -5,38 +5,35 @@ Ext.define('PullMenu.view.PullMenuBottomView', {
 	config: {
 		title: 'Pull to Refresh Demo',
 		layout: 'hbox',
-    	plugins: [
-        	{
-            	xclass: 'Scaljeri.plugin.PullMenu',
-            	items: 
-            			{ 	
-                     			bottom: 	{
-                     						xclass: 'PullMenu.view.MenuBottom', 
-                     						mtype: 'pull',
-                     						fill: false 
-                     				 	}
-                     		} 
-        	}
-    	],
-		 scrollable: {
+    		plugins: [ {
+            		xclass: 'Scaljeri.plugin.PullMenu',
+            		items: { 	
+                     		bottom:	{
+                     			xclass: 'PullMenu.view.MenuBottom', 
+                     			mtype: 'pull',
+                     			fill: false 
+                     		}
+                     	} 
+        	} ],
+		scrollable: {
 		        direction: 'none'
-		    },
-    	 items: [{
+		},
+    	 	items: [{
     	 		xtype: 'panel',
     	 		flex: 1,
-   				style: {
-   					backgroundImage: 'url(resources/images/android_back3.jpg)',
+   			style: {
+   				backgroundImage: 'url(resources/images/android_back3.jpg)',
     				backgroundRepeat: 'no-repeat',
     				backgroundPosition: 'center',
     				backgroundSize: '100% 100%'
+   			},
+   			items:[{
+   				xtype: 'fieldset',
+   				centered: true,
+   				title: 'Bottom-Menu animation settings',
+   				defaults: {
+   					labelWidth:'200px'
    				},
-   				items:[{
-   					xtype: 'fieldset',
-   					centered: true,
-   					title: 'Bottom-Menu animation settings',
-   					defaults: {
-   						labelWidth:'200px'
-   					},
 		       		items: [
 		       		        {
 		               			xtype: 'textfield',
@@ -49,27 +46,27 @@ Ext.define('PullMenu.view.PullMenuBottomView', {
 		               					console.log('x') ;
 		               				}
 		               			}
-		           			},
-		           			{
+		           		},
+		           		{
 		               			xtype: 'textfield',
 		               			name : 'menu',
 		               			label: 'menu speed',
 		               			value: 300,
-		               			cls: 'menuspeed',
+		               			cls: 'menuspeed'
 		           			},
 		           			{
 		               			xtype: 'textfield',
 		               			name : 'delay',
 		               			label: 'delay hide drag-bar',
 		               			value: 500,
-		               			cls: 'delay',
+		               			cls: 'delay'
 		           			},
 		           			{
 		               			xtype: 'textfield',
 		               			name : 'fps',
 		               			label: 'FPS',
 		               			value: 10,
-		               			cls: 'fps',
+		               			cls: 'fps'
 		           			},
 		       		        {
 		       		        	xtype: 'formbuttons',

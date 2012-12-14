@@ -11,7 +11,7 @@ Ext.define('PullMenu.view.FormButtons', {
       		description: 'null',
       		items: [{
       				xtype: 'button',
-    				cls:   'ok-button',
+    				cls:   'ok-button'
     			},
     			{
     				xtype: 'spacer'

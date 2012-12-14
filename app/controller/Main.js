@@ -9,7 +9,7 @@ Ext.define('PullMenu.controller.Main', {
         	topmenu:    'pullmenutop',
         	leftmenu:   'pullmenuleft',
         	bottommenu: 'pullmenubottom',
-        	appendmenu: 'attachedmenus',
+        	appendmenu: 'attachedmenus'
         },
         control: {
         	'formbuttons button': {

@@ -12,7 +12,7 @@ Ext.define('PullMenu.view.PullMenuLeftView', {
                     		left: 	{
                     					xclass: 'PullMenu.view.MenuVertical', 
                     					mtype: 'pull',
-                    					fill: true,
+                    					fill: true
                      		} 
             	}
         	}
@@ -55,21 +55,21 @@ Ext.define('PullMenu.view.PullMenuLeftView', {
 			               			name : 'menu',
 			               			label: 'menu speed',
 			               			value: 300,
-			               			cls: 'menuspeed',
+			               			cls: 'menuspeed'
 			           			},
 			           			{
 			               			xtype: 'textfield',
 			               			name : 'delay',
 			               			label: 'delay hide drag-bar',
 			               			value: 500,
-			               			cls: 'delay',
+			               			cls: 'delay'
 			           			},
 			           			{
 			               			xtype: 'textfield',
 			               			name : 'fps',
 			               			label: 'FPS',
 			               			value: 10,
-			               			cls: 'fps',
+			               			cls: 'fps'
 			           			},
 			       		        {
 			       		        	xtype: 'formbuttons',

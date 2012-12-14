@@ -73,7 +73,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
          * For the 'append' and 'overlay' the parent should be scrollable in the direction required
          * 
          */
-        items: null,
+        items: null
     },
 
     initialize: function() {
@@ -274,7 +274,7 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 			this.cacheScrollOpen = key ;
 			this.undoMinMax = unset ;
 			Ext.Object.merge( this.minmaxPosition, settings ) ;
-		},
+		}
 	}) ;
 	
 	var Drag = Ext.Class({
@@ -440,7 +440,8 @@ Ext.define('Scaljeri.plugin.PullMenu', {
         fill: true,
         delayHide: null, 	// delay in ms
         dragBarWidth: 20,
-        dragBarStyle: 'background-color:black;z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
+	dragBarBGColor: 'black',
+        dragBarStyles: 'z-index:10;border-radius: 0 0 0 0;-webkit-box-pack:center;box-align:center;',
         dragBarHtml:  { height: '<div style="height:10px;width:40px;background:black;margin-top:-1px;border-top:2px solid grey;border-bottom:2px solid grey;"></div>',
         			    width:  '<div style="height:40px;width:10px;background:black;margin-left:-1px;border-left:2px solid grey;border-right:2px solid grey;"></div>'
         },
@@ -492,7 +493,8 @@ Ext.define('Scaljeri.plugin.PullMenu', {
             var dragBarConfig = {
                             xtype:  'panel',
                             layout: 'vbox',
-                            style:  this.dragBarStyle,
+                            style:  this.dragBarStyle + ';background-color:' + this.dragBarBGColor,
+			    cls: 'drag-bar',
                             items:  [{
                                     xtype: 'panel',
                                     centered:true,
@@ -521,6 +523,9 @@ Ext.define('Scaljeri.plugin.PullMenu', {
 	   						this.container.element.dom.style[this.key] = '' ; 
 	   						this.container.element.dom.style[this.key] = (-this.size - this.dragBarWidth - 5)  + 'px' 
 	   						this.mngr.isOpened = null ; // when painted no menus are opened!
+
+							// fix dragbar bg color
+							Ext.fly(this.container.element.query('.drag-bar .x-inner')[1]).applyStyles('background-color: ' + this.dragBarBGColor) ;
 	   					},
 	   					//single: true,
 	   					scope: this

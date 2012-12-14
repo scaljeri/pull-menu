@@ -65,7 +65,7 @@ Ext.define("PullMenu.view.Demo", {
             {
                 title: 'Pull Top',
                 iconCls: 'action',
-                xtype: 'pullmenutop',
+                xtype: 'pullmenutop'
             },	
             {
                 title: 'Pull Left',

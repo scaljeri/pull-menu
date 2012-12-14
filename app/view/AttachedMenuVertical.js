@@ -10,10 +10,11 @@ Ext.define('PullMenu.view.AttachedMenuVertical', {
 	        {
 	        	xtype: 'image',
 	        	src: 'resources/images/left-menu.gif',
+			style: 'background-size:100%',
 	        	width: '200px',
 	        	height: '310px'
 	        }, {
-	        	xtype: 'spacer',
+	        	xtype: 'spacer'
 	        }
 	     ]
 	 }

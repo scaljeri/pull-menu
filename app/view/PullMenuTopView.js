@@ -6,32 +6,31 @@ Ext.define('PullMenu.view.PullMenuTopView', {
 	config: {
 		title: 'Pull to Refresh Demo',
 		layout: 'hbox',
-    	plugins: [
-        	{
-            	xclass: 'Scaljeri.plugin.PullMenu',
-            	items: 
-            			{ 	
-                     			top: 	{
-                     						xclass: 'PullMenu.view.MenuDrag', 
-                     						mtype: 'pull',
-                     						fill: true,
-                     						scrollable: 'vertical', 
-                     						id: 'my-top-menu'
-                     				 	}
-                     		} 
-        	}
-    	],
+    		plugins: [ {
+            		xclass: 'Scaljeri.plugin.PullMenu',
+            		items: { 	
+                     		top: 	{
+                     			xclass: 'PullMenu.view.MenuDrag', 
+                     			mtype: 'pull',
+                     			fill: true,
+                     			scrollable: 'vertical', 
+                     			id: 'my-top-menu'
+                     		}
+                     	} 
+        	} ],
 		 scrollable: {
 		        direction: 'none'
-		    },
-    	 items: [{
+		},
+
+    	 	items: [{
     	 		xtype: 'panel',
     	 		flex: 1,
-   				style: {
-   					backgroundImage: 'url(resources/images/android_back3.jpg)',
+   			style: {
+   				backgroundImage: 'url(resources/images/android_back3.jpg)',
     				backgroundRepeat: 'no-repeat',
     				backgroundPosition: 'center',
-    				backgroundSize: '100% 100%'
+    				backgroundSize: '100% 100%',
+				backgroundColor: 'black'
    				},
    				items:[{
    					xtype: 'fieldset',
@@ -58,21 +57,21 @@ Ext.define('PullMenu.view.PullMenuTopView', {
 		               			name : 'menu',
 		               			label: 'menu speed',
 		               			value: 300,
-		               			cls: 'menuspeed',
+		               			cls: 'menuspeed'
 		           			},
 		           			{
 		               			xtype: 'textfield',
 		               			name : 'delay',
 		               			label: 'delay hide drag-bar',
 		               			value: 500,
-		               			cls: 'delay',
+		               			cls: 'delay'
 		           			},
 		           			{
 		               			xtype: 'textfield',
 		               			name : 'fps',
 		               			label: 'FPS',
 		               			value: 10,
-		               			cls: 'fps',
+		               			cls: 'fps'
 		           			},
 		       		        {
 		       		        	xtype: 'formbuttons',

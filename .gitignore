@@ -3,3 +3,8 @@ archive
 .DS_Store
 .project
 .sass-cache
+build/
+archive/
+touch/
+.sencha_backup/
+*.css

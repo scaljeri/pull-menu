@@ -8,6 +8,6 @@ Ext.define('PullMenu.view.PresidentList', {
         grouped: true,
         itemTpl: '{firstName} {lastName}',
         store: 'Presidents',
-        onItemDisclosure: true,
+        onItemDisclosure: true
     }
 });
